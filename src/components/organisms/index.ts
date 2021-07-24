@@ -1,4 +1,4 @@
 import Drawer from './drawer';
-import Editor from './editor';
+import Note from './note';
 
-export { Drawer, Editor };
+export { Drawer, Note };
