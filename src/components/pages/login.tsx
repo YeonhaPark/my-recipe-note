@@ -1,6 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
+import { Link } from 'react-router-dom';
 import { Container, Divider } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import { Button } from '../atoms';
@@ -51,19 +52,32 @@ export default function Login() {
             <div>MyRecipeNote</div>
           </header>
           <section>
-            <Input type="text" labelName="ID" placeholder="ID" />
+            <Input type="text" labelName="ID" placeholder="ID" required />
             <Input
               type="password"
               labelName="Password"
               placeholder="Password"
+              required
             />
           </section>
           <Divider />
           <section>
-            <Button variant="outlined" fullWidth>
-              Login
-            </Button>
-            <Button variant="contained" fullWidth>
+            <Link to="/main">
+              <Button
+                style={{ marginBottom: '0.5rem' }}
+                variant="outlined"
+                color="secondary"
+                fullWidth
+              >
+                Login
+              </Button>
+            </Link>
+            <Button
+              style={{ marginBottom: '0.5rem' }}
+              variant="contained"
+              color="secondary"
+              fullWidth
+            >
               JOIN
             </Button>
           </section>
