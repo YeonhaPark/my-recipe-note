@@ -47,7 +47,7 @@ export default function Ingredient({
       </label>
       <input
         autoFocus={isFocused}
-        id="ingredient"
+        id={value}
         type="text"
         value={value}
         onKeyDown={onEnter}

@@ -1,17 +1,40 @@
-import Chip from '@material-ui/core/Chip';
-import Stack from '@material-ui/core/Stack';
+/** @jsxRuntime classic */
+/** @jsx jsx */
+import { jsx, css } from '@emotion/react';
+import { Chip, ChipPropsColorOverrides } from '@material-ui/core';
+import { OverridableStringUnion } from '@material-ui/types';
 
-export default function ColorChips(): JSX.Element {
+export type ChipColor = OverridableStringUnion<
+  | 'default'
+  | 'primary'
+  | 'secondary'
+  | 'error'
+  | 'info'
+  | 'success'
+  | 'warning',
+  ChipPropsColorOverrides
+>;
+export interface ChipType {
+  label: string;
+  color: ChipColor;
+  variant?: 'outlined' | 'filled' | undefined;
+}
+export default function CustomChip({
+  label,
+  color,
+  variant = 'filled',
+}: ChipType): JSX.Element {
   return (
-    <Stack spacing={1} alignItems="center">
-      <Stack direction="row" spacing={1}>
-        <Chip onClick={() => {}} label="korean" color="warning" />
-        <Chip label="japanese" color="secondary" />
-      </Stack>
-      <Stack direction="row" spacing={1}>
-        <Chip label="mexican" color="warning" variant="outlined" />
-        <Chip label="fastfood" color="secondary" variant="outlined" />
-      </Stack>
-    </Stack>
+    <span
+      css={css`
+        margin-right: 0.25rem;
+      `}
+    >
+      <Chip label={label || ''} color={color} variant={variant} />
+    </span>
   );
 }
+
+CustomChip.defaultChipType = {
+  variant: 'filled',
+};

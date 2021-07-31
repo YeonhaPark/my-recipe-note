@@ -1,19 +1,13 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
+import React, { useState, KeyboardEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExpandAlt } from '@fortawesome/free-solid-svg-icons';
-import {
-  TextField,
-  FormControl,
-  FormControlLabel,
-  InputLabel,
-  Input,
-  Checkbox,
-} from '@material-ui/core';
-import { withStyles, makeStyles } from '@material-ui/styles';
-import { Button } from '../atoms';
-import { black } from '../../theme/colors';
+import { TextField, Input } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import { Button, ChipType } from '../atoms';
+import { Ingredient, Tags } from '../molecules';
 
 const useStyles = makeStyles({
   root: {
@@ -52,7 +46,7 @@ const contentStyle = css`
   flex-flow: column;
   flex: 1 1 auto;
   padding-bottom: 0.75rem;
-  div:first-of-type {
+  > div:first-of-type {
     margin-bottom: 0.5rem;
   }
 `;
@@ -61,14 +55,66 @@ const contentTextFieldStyle = css`
   height: 100%;
   div {
     height: 100%;
+    textarea {
+      align-self: flex-start;
+    }
   }
 `;
-const tagStyle = css`
-  font-size: 0.75rem;
-  flex: 0 1 1.5rem;
-`;
+
+export type IngredientType = {
+  id: number;
+  isChecked: boolean;
+  name: string;
+  focused: boolean;
+};
 export default function Note(): JSX.Element {
-  const searchStyle = useStyles();
+  const titleStyle = useStyles();
+
+  const [title, setTitle] = useState<string>('');
+  const [ingredientsList, setIngredientsList] = useState<IngredientType[]>([
+    { id: 1, isChecked: false, name: 'beer', focused: false },
+    { id: 2, isChecked: true, name: 'carrot', focused: false },
+  ]);
+  const [contents, setContents] = useState<string>('');
+  const [tag, setTag] = useState<string>('');
+  const [tagList, setTagList] = useState<ChipType[]>([]);
+
+  const addIngredients = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      const newIngredientsList = [
+        ...ingredientsList,
+        {
+          id: ingredientsList[ingredientsList.length - 1].id + 1,
+          isChecked: false,
+          name: '',
+          focused: true,
+        },
+      ];
+      setIngredientsList(newIngredientsList);
+    }
+  };
+
+  const handleValueChange =
+    (stateSetter: React.Dispatch<React.SetStateAction<IngredientType[]>>) =>
+    (type: string, id: number, e: React.ChangeEvent<HTMLInputElement>) => {
+      const copiedIngredientsList = [...ingredientsList];
+      const selectedCheckbox = ingredientsList.filter(
+        (checkbox) => checkbox.id === id,
+      );
+      switch (type) {
+        case 'value':
+          selectedCheckbox[0].name = e.target.value;
+          break;
+        case 'checkbox':
+          selectedCheckbox[0].isChecked = e.target.checked;
+          break;
+        default:
+          break;
+      }
+      const ingredientIdx = ingredientsList.indexOf(selectedCheckbox[0]);
+      copiedIngredientsList[ingredientIdx] = selectedCheckbox[0];
+      stateSetter(copiedIngredientsList);
+    };
 
   return (
     <main css={noteStyle}>
@@ -83,7 +129,9 @@ export default function Note(): JSX.Element {
           <span>Recipe title</span>
         </div>
         <Input
-          classes={searchStyle}
+          classes={titleStyle}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
           type="text"
           placeholder="Type here"
           fullWidth
@@ -93,28 +141,41 @@ export default function Note(): JSX.Element {
         <div css={commonTitleStyle}>
           <span>Ingredients</span>
         </div>
-        <div css={checkboxStyle}>
-          <label htmlFor="ingredient">
-            <Checkbox
-              defaultChecked={true}
-              // onChange={handleChange}
-              name="checkedB"
-              color="primary"
-            />
-          </label>
-          <input id="ingredient" type="text" />
-        </div>
+        {ingredientsList.map((ingredient) => (
+          <Ingredient
+            key={ingredient.id}
+            isFocused={ingredient.focused}
+            checked={ingredient.isChecked}
+            value={ingredient.name}
+            onEnter={addIngredients}
+            onValueChange={handleValueChange(setIngredientsList)}
+            id={ingredient.id}
+          />
+        ))}
       </div>
       <div css={contentStyle}>
         <div css={commonTitleStyle}>
           <span>Contents</span>
         </div>
         <div css={contentTextFieldStyle}>
-          <TextField id="content" fullWidth />
+          <TextField
+            id="content"
+            value={contents}
+            onChange={(e) => setContents(e.target.value)}
+            multiline
+            fullWidth
+          />
         </div>
-        <div css={tagStyle}>
-          <TextField id="tag" label="Add tag..." fullWidth />
-        </div>
+        <Tags
+          setTag={setTag}
+          tag={tag}
+          tagList={tagList}
+          setTagList={setTagList}
+        />
+        {/* <input type="text" id="tag" value={tag} />
+          {tagList.map((tag) => (
+            <Chip key={tag.label} label={tag.label} color={tag.color} />
+          ))} */}
       </div>
     </main>
   );
