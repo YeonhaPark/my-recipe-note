@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Container, Divider } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import { Button } from '../atoms';
-import Input from '../molecules';
+import { Input } from '../molecules';
 import { black } from '../../theme/colors';
 
 const ContainerStyled = withStyles({

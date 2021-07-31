@@ -47,28 +47,12 @@ const commonTitleStyle = css`
   }
 `;
 
-const checkboxStyle = css`
-  display: flex;
-  align-items: center;
-  input {
-    border: 0;
-  }
-`;
-const ContentTextField = withStyles({
-  root: {
-    '& div': {
-      height: '100%',
-      alignItems: 'flex-start',
-    },
-  },
-})(TextField);
-
 const contentStyle = css`
   display: flex;
   flex-flow: column;
   flex: 1 1 auto;
   padding-bottom: 0.75rem;
-  div:first-child {
+  div:first-of-type {
     margin-bottom: 0.5rem;
   }
 `;

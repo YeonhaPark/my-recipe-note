@@ -1,3 +1,4 @@
 import Input from './input';
+import Ingredient from './ingredient';
 
-export default Input;
+export { Input, Ingredient };
