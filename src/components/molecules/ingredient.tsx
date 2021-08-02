@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
-import React from 'react';
+import { ChangeEvent, KeyboardEvent } from 'react';
 import { Checkbox } from '../atoms';
 
 const checkboxStyle = css`
@@ -15,43 +15,38 @@ const checkboxStyle = css`
 `;
 
 interface Props {
-  isFocused: boolean;
   checked: boolean;
-  onValueChange: (
-    type: string,
-    id: number,
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => void;
-  onEnter: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onValueChange: (id: number, e: ChangeEvent<HTMLInputElement>) => void;
+  onCheckboxChange: (id: number, e: ChangeEvent<HTMLInputElement>) => void;
+  onListChange: (id: number, e: KeyboardEvent<HTMLInputElement>) => void;
   value: string;
-  id: number;
+  idx: number;
 }
 export default function Ingredient({
-  isFocused,
   checked,
-  onEnter,
+  onListChange,
+  onCheckboxChange,
   onValueChange,
   value,
-  id,
+  idx,
 }: Props) {
   return (
     <div css={checkboxStyle}>
       <label htmlFor="ingredient">
         <Checkbox
-          id={id}
+          id={idx}
           checked={checked}
-          onCheckboxChange={onValueChange}
-          name={`checkbox_${id}`}
+          onCheckboxChange={onCheckboxChange}
+          name={`checkbox_${idx + 1}`}
           color="primary"
         />
       </label>
       <input
-        autoFocus={isFocused}
-        id={value}
+        id={idx.toString()}
         type="text"
         value={value}
-        onKeyDown={onEnter}
-        onChange={(e) => onValueChange('text', id, e)}
+        onKeyDown={(e) => onListChange(idx, e)}
+        onChange={(e) => onValueChange(idx, e)}
       />
     </div>
   );

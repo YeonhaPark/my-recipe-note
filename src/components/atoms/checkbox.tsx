@@ -12,7 +12,6 @@ interface Props {
   id: number;
   checked: boolean;
   onCheckboxChange: (
-    type: string,
     id: number,
     e: React.ChangeEvent<HTMLInputElement>,
   ) => void;
@@ -29,7 +28,7 @@ export default function Checkbox({
   return (
     <CustomCheckbox
       checked={checked}
-      onChange={(e) => onCheckboxChange('checkbox', id, e)}
+      onChange={(e) => onCheckboxChange(id, e)}
       name={name}
       color={color}
     />

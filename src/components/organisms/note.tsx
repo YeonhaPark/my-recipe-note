@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
-import React, { useState, KeyboardEvent } from 'react';
+import { useState, useEffect, KeyboardEvent, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExpandAlt } from '@fortawesome/free-solid-svg-icons';
 import { TextField, Input } from '@material-ui/core';
@@ -65,56 +65,76 @@ export type IngredientType = {
   id: number;
   isChecked: boolean;
   name: string;
-  focused: boolean;
 };
 export default function Note(): JSX.Element {
   const titleStyle = useStyles();
 
   const [title, setTitle] = useState<string>('');
   const [ingredientsList, setIngredientsList] = useState<IngredientType[]>([
-    { id: 1, isChecked: false, name: 'beer', focused: false },
-    { id: 2, isChecked: true, name: 'carrot', focused: false },
+    { id: 1, isChecked: false, name: 'beer' },
+    { id: 2, isChecked: true, name: 'carrot' },
   ]);
+  const [currentFocus, setCurrentFocus] = useState(0);
   const [contents, setContents] = useState<string>('');
   const [tag, setTag] = useState<string>('');
   const [tagList, setTagList] = useState<ChipType[]>([]);
 
-  const addIngredients = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      const newIngredientsList = [
-        ...ingredientsList,
-        {
-          id: ingredientsList[ingredientsList.length - 1].id + 1,
-          isChecked: false,
-          name: '',
-          focused: true,
-        },
-      ];
-      setIngredientsList(newIngredientsList);
+  const handleIngredientsList = (
+    idx: number,
+    e: KeyboardEvent<HTMLInputElement>,
+  ) => {
+    const { key, currentTarget } = e;
+    switch (key) {
+      case 'Enter':
+        if (currentTarget.value === '') break;
+        const pastLastElemId = ingredientsList[ingredientsList.length - 1].id;
+        const newIngredientsList = [
+          ...ingredientsList,
+          {
+            id: pastLastElemId + 1,
+            isChecked: false,
+            name: '',
+            focused: true,
+          },
+        ];
+        setCurrentFocus(idx + 1);
+        setIngredientsList(newIngredientsList);
+        break;
+      case 'Backspace':
+        if (currentTarget.value === '') {
+          const copiedIngredientsList = ingredientsList.slice();
+          copiedIngredientsList.pop();
+          setCurrentFocus(idx - 1);
+          setIngredientsList(copiedIngredientsList);
+        }
+        break;
+      default:
+        break;
     }
   };
 
   const handleValueChange =
-    (stateSetter: React.Dispatch<React.SetStateAction<IngredientType[]>>) =>
-    (type: string, id: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    (type: string) =>
+    (idx: number, { target }: ChangeEvent<HTMLInputElement>) => {
       const copiedIngredientsList = [...ingredientsList];
-      const selectedCheckbox = ingredientsList.filter(
-        (checkbox) => checkbox.id === id,
-      );
+
       switch (type) {
-        case 'value':
-          selectedCheckbox[0].name = e.target.value;
+        case 'text':
+          copiedIngredientsList[idx].name = target.value;
           break;
         case 'checkbox':
-          selectedCheckbox[0].isChecked = e.target.checked;
+          copiedIngredientsList[idx].isChecked = target.checked;
           break;
         default:
           break;
       }
-      const ingredientIdx = ingredientsList.indexOf(selectedCheckbox[0]);
-      copiedIngredientsList[ingredientIdx] = selectedCheckbox[0];
-      stateSetter(copiedIngredientsList);
+
+      setIngredientsList(copiedIngredientsList);
     };
+
+  useEffect(() => {
+    document.getElementById(currentFocus.toString())?.focus();
+  }, [currentFocus]);
 
   return (
     <main css={noteStyle}>
@@ -141,15 +161,15 @@ export default function Note(): JSX.Element {
         <div css={commonTitleStyle}>
           <span>Ingredients</span>
         </div>
-        {ingredientsList.map((ingredient) => (
+        {ingredientsList.map((ingredient, index) => (
           <Ingredient
             key={ingredient.id}
-            isFocused={ingredient.focused}
             checked={ingredient.isChecked}
             value={ingredient.name}
-            onEnter={addIngredients}
-            onValueChange={handleValueChange(setIngredientsList)}
-            id={ingredient.id}
+            onListChange={handleIngredientsList}
+            onValueChange={handleValueChange('text')}
+            onCheckboxChange={handleValueChange('checkbox')}
+            idx={index}
           />
         ))}
       </div>
@@ -172,10 +192,6 @@ export default function Note(): JSX.Element {
           tagList={tagList}
           setTagList={setTagList}
         />
-        {/* <input type="text" id="tag" value={tag} />
-          {tagList.map((tag) => (
-            <Chip key={tag.label} label={tag.label} color={tag.color} />
-          ))} */}
       </div>
     </main>
   );
