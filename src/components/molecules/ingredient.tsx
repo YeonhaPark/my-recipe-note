@@ -20,7 +20,7 @@ interface Props {
   onCheckboxChange: (id: number, e: ChangeEvent<HTMLInputElement>) => void;
   onListChange: (id: number, e: KeyboardEvent<HTMLInputElement>) => void;
   value: string;
-  idx: number;
+  ingredientId: number;
 }
 export default function Ingredient({
   checked,
@@ -28,25 +28,25 @@ export default function Ingredient({
   onCheckboxChange,
   onValueChange,
   value,
-  idx,
+  ingredientId,
 }: Props) {
   return (
     <div css={checkboxStyle}>
       <label htmlFor="ingredient">
         <Checkbox
-          id={idx}
+          id={ingredientId}
           checked={checked}
           onCheckboxChange={onCheckboxChange}
-          name={`checkbox_${idx + 1}`}
+          name={`checkbox_${ingredientId + 1}`}
           color="primary"
         />
       </label>
       <input
-        id={idx.toString()}
+        id={ingredientId.toString()}
         type="text"
         value={value}
-        onKeyDown={(e) => onListChange(idx, e)}
-        onChange={(e) => onValueChange(idx, e)}
+        onKeyDown={(e) => onListChange(ingredientId, e)}
+        onChange={(e) => onValueChange(ingredientId, e)}
       />
     </div>
   );

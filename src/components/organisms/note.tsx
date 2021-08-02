@@ -80,32 +80,54 @@ export default function Note(): JSX.Element {
   const [tagList, setTagList] = useState<ChipType[]>([]);
 
   const handleIngredientsList = (
-    idx: number,
+    ingredientId: number,
     e: KeyboardEvent<HTMLInputElement>,
   ) => {
     const { key, currentTarget } = e;
     switch (key) {
       case 'Enter':
         if (currentTarget.value === '') break;
-        const pastLastElemId = ingredientsList[ingredientsList.length - 1].id;
-        const newIngredientsList = [
-          ...ingredientsList,
-          {
-            id: pastLastElemId + 1,
+        let newIngredientsList;
+        const elemIdx = ingredientsList.indexOf(
+          ingredientsList[ingredientId - 1],
+        );
+        console.log('elem idx:', elemIdx);
+        if (elemIdx !== -1) {
+          const newElem = {
+            id: elemIdx + 2,
             isChecked: false,
             name: '',
-            focused: true,
-          },
-        ];
-        setCurrentFocus(idx + 1);
+          } as IngredientType;
+          newIngredientsList = ingredientsList
+            .slice(0, elemIdx + 1)
+            .concat([newElem])
+            .concat(
+              ingredientsList.slice(elemIdx + 1).map((ingredient) => {
+                return { ...ingredient, id: ingredient.id + 1 };
+              }),
+            );
+        } else {
+          newIngredientsList = [
+            ...ingredientsList,
+            {
+              id: ingredientId + 1,
+              isChecked: false,
+              name: '',
+            },
+          ];
+        }
+        setIngredientsList(newIngredientsList);
+
+        setCurrentFocus(ingredientId + 1);
         setIngredientsList(newIngredientsList);
         break;
       case 'Backspace':
         if (currentTarget.value === '') {
-          const copiedIngredientsList = ingredientsList.slice();
-          copiedIngredientsList.pop();
-          setCurrentFocus(idx - 1);
-          setIngredientsList(copiedIngredientsList);
+          const filteredIngredientsList = ingredientsList.filter(
+            (ingredient) => ingredient.id !== ingredientId,
+          );
+          setCurrentFocus(ingredientId - 1);
+          setIngredientsList(filteredIngredientsList);
         }
         break;
       default:
@@ -115,15 +137,15 @@ export default function Note(): JSX.Element {
 
   const handleValueChange =
     (type: string) =>
-    (idx: number, { target }: ChangeEvent<HTMLInputElement>) => {
+    (ingredientId: number, { target }: ChangeEvent<HTMLInputElement>) => {
       const copiedIngredientsList = [...ingredientsList];
 
       switch (type) {
         case 'text':
-          copiedIngredientsList[idx].name = target.value;
+          copiedIngredientsList[ingredientId - 1].name = target.value;
           break;
         case 'checkbox':
-          copiedIngredientsList[idx].isChecked = target.checked;
+          copiedIngredientsList[ingredientId - 1].isChecked = target.checked;
           break;
         default:
           break;
@@ -161,7 +183,7 @@ export default function Note(): JSX.Element {
         <div css={commonTitleStyle}>
           <span>Ingredients</span>
         </div>
-        {ingredientsList.map((ingredient, index) => (
+        {ingredientsList.map((ingredient) => (
           <Ingredient
             key={ingredient.id}
             checked={ingredient.isChecked}
@@ -169,7 +191,7 @@ export default function Note(): JSX.Element {
             onListChange={handleIngredientsList}
             onValueChange={handleValueChange('text')}
             onCheckboxChange={handleValueChange('checkbox')}
-            idx={index}
+            ingredientId={ingredient.id}
           />
         ))}
       </div>
