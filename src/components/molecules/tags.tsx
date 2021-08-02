@@ -37,9 +37,13 @@ export default function Tags({ setTag, tag, tagList, setTagList }: Props) {
   const addTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       const target = e.target as HTMLInputElement;
-      const randomColorIdx = Math.floor(Math.random() * colors.length);
-      const randomColor: ChipColor = colors[randomColorIdx] as ChipColor;
-      setTagList([...tagList, { label: target.value, color: randomColor }]);
+      const labelChipArr = tagList.map((tag) => tag.label);
+      if (!labelChipArr.includes(target.value)) {
+        const randomColorIdx = Math.floor(Math.random() * colors.length);
+        const randomColor: ChipColor = colors[randomColorIdx] as ChipColor;
+        setTagList([...tagList, { label: target.value, color: randomColor }]);
+      } else {
+      }
     }
   };
 
@@ -58,8 +62,14 @@ export default function Tags({ setTag, tag, tagList, setTagList }: Props) {
         options={tagList.map((option) => option.label)}
         defaultValue={undefined}
         freeSolo
-        renderTags={(_, getTagProps) => {
-          const chips = tagList.map((tag: ChipType, index: number) => (
+        renderTags={(value, getTagProps) => {
+          const newValues = value.map((val: string, index: number) => {
+            return {
+              label: val,
+              color: colors[index] as ChipColor,
+            };
+          });
+          const chips = newValues.map((tag: ChipType, index: number) => (
             <Chip
               color={tag.color}
               variant="filled"
