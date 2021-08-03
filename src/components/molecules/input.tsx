@@ -7,8 +7,14 @@ interface Props {
   labelName: string;
   type: string;
   placeholder: string;
+  required?: boolean;
 }
-export default function Input({ labelName, type, placeholder }: Props) {
+export default function Input({
+  labelName,
+  type,
+  placeholder,
+  required,
+}: Props) {
   return (
     <div
       css={css`
@@ -16,7 +22,17 @@ export default function Input({ labelName, type, placeholder }: Props) {
       `}
     >
       <InputLabel htmlFor={labelName}>{labelName}</InputLabel>
-      <MInput type={type} id={labelName} fullWidth placeholder={placeholder} />
+      <MInput
+        type={type}
+        id={labelName}
+        fullWidth
+        placeholder={placeholder}
+        required={required}
+      />
     </div>
   );
 }
+
+Input.defaultProps = {
+  required: false,
+};

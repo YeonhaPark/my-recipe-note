@@ -1,10 +1,19 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
+import { useState, useEffect, KeyboardEvent, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExpandAlt } from '@fortawesome/free-solid-svg-icons';
-import { TextField } from '@material-ui/core';
-import { Button } from '../atoms';
+import { TextField, Input } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import { Button, ChipType } from '../atoms';
+import { Ingredient, Tags } from '../molecules';
+
+const useStyles = makeStyles({
+  root: {
+    height: '3rem',
+  },
+});
 
 const noteStyle = css`
   padding: 0 1rem 0.75rem;
@@ -22,7 +31,14 @@ const headerStyle = css`
 `;
 
 const commonInputStyle = css`
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+`;
+
+const commonTitleStyle = css`
+  display: flex;
+  span {
+    white-space: nowrap;
+  }
 `;
 
 const contentStyle = css`
@@ -30,17 +46,118 @@ const contentStyle = css`
   flex-flow: column;
   flex: 1 1 auto;
   padding-bottom: 0.75rem;
+  > div:first-of-type {
+    margin-bottom: 0.5rem;
+  }
 `;
 
-const firstContent = css`
-  flex: 1 1 auto;
+const contentTextFieldStyle = css`
+  height: 100%;
+  div {
+    height: 100%;
+    textarea {
+      align-self: flex-start;
+    }
+  }
 `;
 
-const tagStyle = css`
-  font-size: 0.75rem;
-  flex: 0 1 1.5rem;
-`;
+export type IngredientType = {
+  id: number;
+  isChecked: boolean;
+  name: string;
+};
 export default function Note(): JSX.Element {
+  const titleStyle = useStyles();
+
+  const [title, setTitle] = useState<string>('');
+  const [ingredientsList, setIngredientsList] = useState<IngredientType[]>([
+    { id: 1, isChecked: false, name: 'beer' },
+    { id: 2, isChecked: true, name: 'carrot' },
+  ]);
+  const [currentFocus, setCurrentFocus] = useState(0);
+  const [contents, setContents] = useState<string>('');
+  const [tag, setTag] = useState<string>('');
+  const [tagList, setTagList] = useState<ChipType[]>([]);
+
+  const handleIngredientsList = (
+    ingredientId: number,
+    e: KeyboardEvent<HTMLInputElement>,
+  ) => {
+    const { key, currentTarget } = e;
+    switch (key) {
+      case 'Enter':
+        if (currentTarget.value === '') break;
+        let newIngredientsList;
+        const elemIdx = ingredientsList.indexOf(
+          ingredientsList[ingredientId - 1],
+        );
+        console.log('elem idx:', elemIdx);
+        if (elemIdx !== -1) {
+          const newElem = {
+            id: elemIdx + 2,
+            isChecked: false,
+            name: '',
+          } as IngredientType;
+          newIngredientsList = ingredientsList
+            .slice(0, elemIdx + 1)
+            .concat([newElem])
+            .concat(
+              ingredientsList.slice(elemIdx + 1).map((ingredient) => {
+                return { ...ingredient, id: ingredient.id + 1 };
+              }),
+            );
+        } else {
+          newIngredientsList = [
+            ...ingredientsList,
+            {
+              id: ingredientId + 1,
+              isChecked: false,
+              name: '',
+            },
+          ];
+        }
+        setIngredientsList(newIngredientsList);
+
+        setCurrentFocus(ingredientId + 1);
+        setIngredientsList(newIngredientsList);
+        break;
+      case 'Backspace':
+        if (currentTarget.value === '') {
+          const filteredIngredientsList = ingredientsList.filter(
+            (ingredient) => ingredient.id !== ingredientId,
+          );
+          setCurrentFocus(ingredientId - 1);
+          setIngredientsList(filteredIngredientsList);
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleValueChange =
+    (type: string) =>
+    (ingredientId: number, { target }: ChangeEvent<HTMLInputElement>) => {
+      const copiedIngredientsList = [...ingredientsList];
+
+      switch (type) {
+        case 'text':
+          copiedIngredientsList[ingredientId - 1].name = target.value;
+          break;
+        case 'checkbox':
+          copiedIngredientsList[ingredientId - 1].isChecked = target.checked;
+          break;
+        default:
+          break;
+      }
+
+      setIngredientsList(copiedIngredientsList);
+    };
+
+  useEffect(() => {
+    document.getElementById(currentFocus.toString())?.focus();
+  }, [currentFocus]);
+
   return (
     <main css={noteStyle}>
       <header css={headerStyle}>
@@ -50,56 +167,53 @@ export default function Note(): JSX.Element {
         </Button>
       </header>
       <div css={commonInputStyle}>
-        <TextField
-          id="title"
-          label="Recipe title..."
-          color="secondary"
+        <div css={commonTitleStyle}>
+          <span>Recipe title</span>
+        </div>
+        <Input
+          classes={titleStyle}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          type="text"
+          placeholder="Type here"
           fullWidth
         />
       </div>
       <div css={commonInputStyle}>
-        <TextField
-          id="title"
-          label="Ingredients..."
-          color="secondary"
-          fullWidth
-        />
+        <div css={commonTitleStyle}>
+          <span>Ingredients</span>
+        </div>
+        {ingredientsList.map((ingredient) => (
+          <Ingredient
+            key={ingredient.id}
+            checked={ingredient.isChecked}
+            value={ingredient.name}
+            onListChange={handleIngredientsList}
+            onValueChange={handleValueChange('text')}
+            onCheckboxChange={handleValueChange('checkbox')}
+            ingredientId={ingredient.id}
+          />
+        ))}
       </div>
-      <div css={contentStyle} contentEditable="true">
-        <div css={firstContent}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in odio
-          nec dui condimentum tincidunt sed sed leo. Sed luctus condimentum
-          nisi, a tincidunt nisl dignissim ac. Vivamus non quam eu quam aliquam
-          ullamcorper quis ut sem. Donec ac velit interdum, auctor libero in,
-          feugiat velit. Quisque vel velit nec dolor sollicitudin varius. Ut
-          dignissim id dui nec porta. Donec efficitur eu sem nec blandit.
-          Phasellus bibendum lacus vitae nibh dignissim, eleifend lacinia magna
-          volutpat. Sed ligula mauris, mattis et tristique at, pellentesque a
-          nunc. Sed semper bibendum ex, id varius dui imperdiet quis. Sed
-          ultricies dui at orci venenatis, eget maximus erat euismod. Ut eget
-          magna mattis, viverra quam vehicula, placerat eros. Duis laoreet,
-          justo sit amet iaculis finibus, lectus elit scelerisque elit, et
-          tempor mi purus id diam. Nulla nec eleifend enim. In vel elit vitae
-          justo interdum pulvinar in id felis. Morbi rhoncus nisl sed urna
-          venenatis, a sollicitudin felis gravida. Nulla dictum erat non mi
-          tempor auctor. Integer consequat dui quis cursus auctor. Sed auctor
-          malesuada maximus. Suspendisse pulvinar ante urna, ac porttitor sem
-          accumsan non. Integer maximus pellentesque ante efficitur euismod.
-          Praesent magna quam, mollis eget iaculis in, semper at erat. Vivamus
-          lacinia ut diam nec finibus. Vivamus mattis orci eu ultrices porta.
-          Aenean lobortis erat vitae nunc cursus, a imperdiet leo porta. Morbi
-          sed ligula metus. Integer turpis metus, dapibus id lorem vitae,
-          pulvinar gravida erat. Vivamus tristique quis tellus eget lobortis.
-          Vestibulum quis pellentesque nulla. Praesent blandit aliquet
-          ullamcorper. Sed rhoncus et purus eleifend tincidunt. Nunc ultrices
-          nibh in egestas faucibus. Phasellus semper lectus blandit, venenatis
-          urna nec, imperdiet lectus. Quisque at maximus odio. Proin id purus ut
-          libero fermentum feugiat eu a neque. Vestibulum ante ipsum primis in
-          faucibus orci luctus et ultrices posuere cubilia curae;
+      <div css={contentStyle}>
+        <div css={commonTitleStyle}>
+          <span>Contents</span>
         </div>
-        <div css={tagStyle}>
-          <TextField id="tag" label="Add tag..." fullWidth />
+        <div css={contentTextFieldStyle}>
+          <TextField
+            id="content"
+            value={contents}
+            onChange={(e) => setContents(e.target.value)}
+            multiline
+            fullWidth
+          />
         </div>
+        <Tags
+          setTag={setTag}
+          tag={tag}
+          tagList={tagList}
+          setTagList={setTagList}
+        />
       </div>
     </main>
   );

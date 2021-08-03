@@ -107,7 +107,7 @@ export default function Drawer() {
       <section css={sectionStyle}>
         <div css={tagSectionStyle}>Tags</div>
         <div>
-          <Chip />
+          <Chip variant="filled" color="warning" label="korean" />
         </div>
       </section>
     </MDrawer>

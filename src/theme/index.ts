@@ -5,8 +5,6 @@ import {
   indigoLight,
   yellow,
   yellowLight,
-  orange,
-  red,
   gray,
 } from './colors';
 

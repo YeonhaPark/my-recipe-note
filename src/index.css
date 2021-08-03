@@ -4,3 +4,12 @@ body {
   margin: 0;
   font-family: 'Lato', sans-serif;
 }
+
+input:focus,
+textarea {
+  outline: none !important;
+}
+
+a {
+  text-decoration: none;
+}
