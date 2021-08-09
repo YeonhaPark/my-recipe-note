@@ -7,7 +7,7 @@ import { faExpandAlt } from '@fortawesome/free-solid-svg-icons';
 import { TextField, Input } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { Button, ChipType } from '../atoms';
-import { Ingredient, Tags } from '../molecules';
+import { Ingredient, Tags, IngredientType } from '../molecules';
 
 const useStyles = makeStyles({
   root: {
@@ -61,11 +61,6 @@ const contentTextFieldStyle = css`
   }
 `;
 
-export type IngredientType = {
-  id: number;
-  isChecked: boolean;
-  name: string;
-};
 export default function Note(): JSX.Element {
   const titleStyle = useStyles();
 
@@ -185,6 +180,7 @@ export default function Note(): JSX.Element {
         </div>
         {ingredientsList.map((ingredient) => (
           <Ingredient
+            data-testid={`ingredient-${ingredient.id}`}
             key={ingredient.id}
             checked={ingredient.isChecked}
             value={ingredient.name}

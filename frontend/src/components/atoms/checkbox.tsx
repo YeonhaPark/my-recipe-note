@@ -18,6 +18,7 @@ interface Props {
   name: string;
   color: 'primary' | 'secondary';
 }
+
 export default function Checkbox({
   id,
   checked,
