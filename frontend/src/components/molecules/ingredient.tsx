@@ -37,12 +37,12 @@ export default function Ingredient({
           id={ingredientId}
           checked={checked}
           onCheckboxChange={onCheckboxChange}
-          name={`checkbox_${ingredientId + 1}`}
+          name={`checkbox-${ingredientId}`}
           color="primary"
         />
       </label>
       <input
-        id={ingredientId.toString()}
+        id={`input-${ingredientId.toString()}`}
         type="text"
         value={value}
         onKeyDown={(e) => onListChange(ingredientId, e)}
