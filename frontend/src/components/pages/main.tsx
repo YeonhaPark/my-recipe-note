@@ -1,7 +1,9 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
+import { useEffect } from 'react';
 import { Drawer, Note } from '../organisms';
+import { apiProvider } from '../../api/providers';
 
 const mainStyle = css`
   display: grid;
@@ -10,6 +12,16 @@ const mainStyle = css`
 `;
 
 export default function Main(): JSX.Element {
+  const getAllPosts = async () => {
+    try {
+      const result = await apiProvider.getAll('posts');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  useEffect(() => {
+    getAllPosts();
+  }, []);
   return (
     <div css={mainStyle}>
       <Drawer />
