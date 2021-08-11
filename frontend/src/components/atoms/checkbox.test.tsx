@@ -23,7 +23,7 @@ describe('Checkbox', () => {
     expect(button.prop('checked')).toEqual(true);
   });
 
-  it('match snapshot', () => {
+  it('matches snapshot', () => {
     const tree = renderer.create(<Checkbox {...checkboxProps} />).toJSON();
     expect(tree).toMatchSnapshot();
   });

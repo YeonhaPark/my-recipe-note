@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Checkbox match snapshot 1`] = `
+exports[`Checkbox matches snapshot 1`] = `
 <span
   className="MuiButtonBase-root ForwardRef(Checkbox)-root-1 MuiCheckbox-root MuiCheckbox-colorPrimary PrivateSwitchBase-root css-ncoufy-MuiButtonBase-root-MuiCheckbox-root"
   onBlur={[Function]}
