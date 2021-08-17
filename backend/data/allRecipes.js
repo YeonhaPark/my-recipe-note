@@ -1,4 +1,4 @@
-const allRecipes = [
+let allRecipes = [
   {
     id: '8',
     title: 'taco',
@@ -41,4 +41,47 @@ const allRecipes = [
   },
 ];
 
-export default allRecipes;
+export async function getAll() {
+  return allRecipes;
+}
+
+export async function getById(id) {
+  return allRecipes.find((recipe) => id === recipe.id);
+}
+
+export async function getByTitle(title) {
+  return allRecipes.filter((recipe) => {
+    if (title === recipe.title || recipe.title.includes(title)) return true;
+  });
+}
+
+export async function create(recipe) {
+  allRecipes.unshift(recipe);
+}
+
+export async function update(id, recipe) {
+  const keys = Object.keys(recipe);
+
+  const selected = allRecipes.find((recipe) => recipe.id === id);
+  if (selected) {
+    selected.modifiedAt = Date.now().toString();
+
+    keys.forEach((key) => {
+      selected[key] = recipe[key];
+    });
+    return selected;
+  } else {
+    return selected;
+  }
+}
+
+export async function remove(id) {
+  const itemToDelete = allRecipes.find((recipe) => recipe.id === id);
+  const idx = allRecipes.indexOf(itemToDelete);
+
+  if (idx !== -1) {
+    return allRecipes.splice(idx, 1); // 해당 아이디의 인덱스 찾기
+  } else {
+    return undefined;
+  }
+}
