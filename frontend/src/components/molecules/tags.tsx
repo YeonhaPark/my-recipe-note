@@ -88,6 +88,7 @@ export default function Tags({ tags, setTags }: Props) {
           const chips = newTags.map((tag: TagType, index: number) => (
             <Chip
               {...getTagProps({ index })}
+              key={tag.label}
               color={tag.color}
               variant="filled"
               label={tag.label}
