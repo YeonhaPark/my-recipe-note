@@ -1,13 +1,28 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
-import { useState, useEffect, KeyboardEvent, ChangeEvent } from 'react';
+import {
+  useState,
+  useEffect,
+  KeyboardEvent,
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExpandAlt } from '@fortawesome/free-solid-svg-icons';
-import { TextField, Input } from '@material-ui/core';
+import {
+  TextField,
+  Input,
+  Menu,
+  MenuItem,
+  IconButton,
+} from '@material-ui/core';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { makeStyles } from '@material-ui/styles';
-import { Button, ChipType } from '../atoms';
-import { Ingredient, Tags, IngredientType } from '../molecules';
+import { Button } from '../atoms';
+import { IngredientType, TagType } from '../../api/types';
+import { Ingredient, Tags } from '../molecules';
 
 const useStyles = makeStyles({
   root: {
@@ -61,18 +76,51 @@ const contentTextFieldStyle = css`
   }
 `;
 
-export default function Note(): JSX.Element {
+interface Props {
+  onUpload: () => void;
+  onDelete: () => void;
+  recipeID: string;
+  title: string;
+  setTitle: Dispatch<SetStateAction<string>>;
+  ingredients: IngredientType[];
+  setIngredients: Dispatch<SetStateAction<IngredientType[]>>;
+  contents: string;
+  setContents: Dispatch<SetStateAction<string>>;
+  tags: TagType[];
+  setTags: Dispatch<SetStateAction<TagType[]>>;
+}
+
+// UPLOAD or CREATE
+export default function Note({
+  onUpload,
+  onDelete,
+  recipeID,
+  title,
+  setTitle,
+  contents,
+  setContents,
+  ingredients,
+  setIngredients,
+  tags,
+  setTags,
+}: Props): JSX.Element {
   const titleStyle = useStyles();
 
-  const [title, setTitle] = useState<string>('');
-  const [ingredientsList, setIngredientsList] = useState<IngredientType[]>([
-    { id: 1, isChecked: false, name: 'beer' },
-    { id: 2, isChecked: true, name: 'carrot' },
-  ]);
   const [currentFocus, setCurrentFocus] = useState(0);
-  const [contents, setContents] = useState<string>('');
-  const [tag, setTag] = useState<string>('');
-  const [tagList, setTagList] = useState<ChipType[]>([]);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleBurgerClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleDelete = () => {
+    handleMenuClose();
+    onDelete();
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleIngredientsList = (
     ingredientId: number,
@@ -83,27 +131,24 @@ export default function Note(): JSX.Element {
       case 'Enter':
         if (currentTarget.value === '') break;
         let newIngredientsList;
-        const elemIdx = ingredientsList.indexOf(
-          ingredientsList[ingredientId - 1],
-        );
-        console.log('elem idx:', elemIdx);
+        const elemIdx = ingredients.indexOf(ingredients[ingredientId - 1]);
         if (elemIdx !== -1) {
           const newElem = {
             id: elemIdx + 2,
             isChecked: false,
             name: '',
           } as IngredientType;
-          newIngredientsList = ingredientsList
+          newIngredientsList = ingredients
             .slice(0, elemIdx + 1)
             .concat([newElem])
             .concat(
-              ingredientsList.slice(elemIdx + 1).map((ingredient) => {
+              ingredients.slice(elemIdx + 1).map((ingredient) => {
                 return { ...ingredient, id: ingredient.id + 1 };
               }),
             );
         } else {
           newIngredientsList = [
-            ...ingredientsList,
+            ...ingredients,
             {
               id: ingredientId + 1,
               isChecked: false,
@@ -111,18 +156,18 @@ export default function Note(): JSX.Element {
             },
           ];
         }
-        setIngredientsList(newIngredientsList);
+        setIngredients(newIngredientsList);
 
         setCurrentFocus(ingredientId + 1);
-        setIngredientsList(newIngredientsList);
+        setIngredients(newIngredientsList);
         break;
       case 'Backspace':
         if (currentTarget.value === '') {
-          const filteredIngredientsList = ingredientsList.filter(
+          const filteredIngredientsList = ingredients.filter(
             (ingredient) => ingredient.id !== ingredientId,
           );
           setCurrentFocus(ingredientId - 1);
-          setIngredientsList(filteredIngredientsList);
+          setIngredients(filteredIngredientsList);
         }
         break;
       default:
@@ -133,7 +178,7 @@ export default function Note(): JSX.Element {
   const handleValueChange =
     (type: string) =>
     (ingredientId: number, { target }: ChangeEvent<HTMLInputElement>) => {
-      const copiedIngredientsList = [...ingredientsList];
+      const copiedIngredientsList = [...ingredients];
 
       switch (type) {
         case 'text':
@@ -146,7 +191,7 @@ export default function Note(): JSX.Element {
           break;
       }
 
-      setIngredientsList(copiedIngredientsList);
+      setIngredients(copiedIngredientsList);
     };
 
   useEffect(() => {
@@ -157,9 +202,38 @@ export default function Note(): JSX.Element {
     <main css={noteStyle}>
       <header css={headerStyle}>
         <FontAwesomeIcon icon={faExpandAlt} />
-        <Button color="secondary" variant="contained">
-          Upload
-        </Button>
+        <div
+          css={css`
+            display: flex;
+            align-items: center;
+          `}
+        >
+          <IconButton
+            aria-controls="simple-menu"
+            aria-haspopup="true"
+            onClick={handleBurgerClick}
+          >
+            <MoreHorizIcon />
+          </IconButton>
+          <Menu
+            id="simple-menu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={handleMenuClose}>Favorite</MenuItem>
+            <MenuItem onClick={handleDelete}>Delete</MenuItem>
+            <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+          </Menu>
+          <Button
+            style={{ marginLeft: '0.5rem' }}
+            onClick={onUpload}
+            color="secondary"
+            variant="contained"
+          >
+            Upload
+          </Button>
+        </div>
       </header>
       <div css={commonInputStyle}>
         <div css={commonTitleStyle}>
@@ -178,7 +252,7 @@ export default function Note(): JSX.Element {
         <div css={commonTitleStyle}>
           <span>Ingredients</span>
         </div>
-        {ingredientsList.map((ingredient) => (
+        {ingredients.map((ingredient) => (
           <Ingredient
             data-testid={`ingredient-${ingredient.id}`}
             key={ingredient.id}
@@ -204,12 +278,7 @@ export default function Note(): JSX.Element {
             fullWidth
           />
         </div>
-        <Tags
-          setTag={setTag}
-          tag={tag}
-          tagList={tagList}
-          setTagList={setTagList}
-        />
+        <Tags tags={tags} setTags={setTags} />
       </div>
     </main>
   );

@@ -3,6 +3,7 @@ import { Button as MButton } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 
 interface Props {
+  onClick?: () => void;
   children: string | ReactNode;
   variant?: 'text' | 'contained' | 'outlined';
   fullWidth?: boolean;
@@ -25,6 +26,7 @@ const CustomButton = withStyles({
 })(MButton);
 
 export default function Button({
+  onClick,
   children,
   color,
   variant,
@@ -33,6 +35,7 @@ export default function Button({
 }: Props): JSX.Element {
   return (
     <CustomButton
+      onClick={onClick}
       color={color}
       style={style}
       variant={variant}

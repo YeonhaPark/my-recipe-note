@@ -10,7 +10,7 @@ const CustomCheckbox = withStyles({
 
 interface Props {
   id: number;
-  checked: boolean;
+  checked: boolean | undefined;
   onCheckboxChange: (
     id: number,
     e: React.ChangeEvent<HTMLInputElement>,

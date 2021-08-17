@@ -4,6 +4,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan'; // 사용자에게 받은 요청에 대해 매번 console해줄 필요 없이 자동으로 로그 생성 https://github.com/expressjs/morgan
 import helmet from 'helmet'; // 공통적으로 보안에 필요한 헤더들을 추가해줌
+import 'express-async-errors';
 
 const app = express();
 
@@ -32,10 +33,15 @@ const options = {
 };
 app.use(express.static('public', options)); // 사용자가 public 폴더 안에 있는 리소스에 접근이 가능함
 
-// app.get('/', (req, res, next) => {
-//   console.log('header:', req.body);
-//   console.log('cookies: ', req.cookies);
-// });
-app.use('/posts', postRouter);
+app.use('/recipes', postRouter);
+
+app.use((req, res, next) => {
+  res.sendStatus(404);
+});
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.sendStatus(500);
+});
 
 app.listen(8081);

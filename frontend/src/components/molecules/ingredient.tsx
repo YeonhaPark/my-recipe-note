@@ -15,7 +15,7 @@ const checkboxStyle = css`
 `;
 
 interface Props {
-  checked: boolean;
+  checked: boolean | undefined;
   onValueChange: (id: number, e: ChangeEvent<HTMLInputElement>) => void;
   onCheckboxChange: (id: number, e: ChangeEvent<HTMLInputElement>) => void;
   onListChange: (id: number, e: KeyboardEvent<HTMLInputElement>) => void;

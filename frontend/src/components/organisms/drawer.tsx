@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
-import { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 import {
   Drawer as MDrawer,
   List,
@@ -10,8 +10,9 @@ import {
   IconButton,
   Input,
 } from '@material-ui/core';
+import { RecipesType } from '../../api/types';
 import { makeStyles } from '@material-ui/styles';
-import { NoteAdd } from '@material-ui/icons';
+import { NoteAdd, Search } from '@material-ui/icons';
 import { Chip } from '../atoms';
 import { gray } from '../../theme/colors';
 
@@ -41,6 +42,8 @@ const addIconStyle = css`
 `;
 
 const searchbarStyle = css`
+  display: flex;
+  align-items: center;
   padding: 0 0.75rem;
 `;
 
@@ -58,7 +61,23 @@ const tagSectionStyle = css`
   border-bottom: 1px solid ${gray};
 `;
 
-export default function Drawer() {
+interface Props {
+  onCreateNew: () => void;
+  recipeList: RecipesType[];
+  onRecipeClick: (id: string) => void;
+  searchWords: string;
+  onSearch: (e: ChangeEvent<HTMLInputElement>) => void;
+  onSearchClick: () => void;
+}
+
+export default function Drawer({
+  onCreateNew,
+  recipeList,
+  onRecipeClick,
+  searchWords,
+  onSearch,
+  onSearchClick,
+}: Props) {
   const [open, setOpen] = useState<boolean>(true);
 
   const searchStyle = useStyles();
@@ -83,7 +102,11 @@ export default function Drawer() {
         <div css={divider}>
           All Recipes
           <div css={addIconStyle}>
-            <IconButton color="inherit" aria-label="create new recipe">
+            <IconButton
+              onClick={onCreateNew}
+              color="inherit"
+              aria-label="create new recipe"
+            >
               <NoteAdd />
             </IconButton>
           </div>
@@ -94,15 +117,26 @@ export default function Drawer() {
           classes={searchStyle}
           type="text"
           placeholder="Search..."
+          value={searchWords}
+          onChange={onSearch}
           fullWidth
         />
+        <IconButton onClick={onSearchClick}>
+          <Search />
+        </IconButton>
       </div>
       <List>
-        {['Mexican Taco', 'Sandwich', 'Seolleongtang'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
+        {recipeList
+          ? recipeList.map((recipe, index) => (
+              <ListItem
+                button
+                onClick={() => onRecipeClick(recipe.id)}
+                key={recipe.id}
+              >
+                <ListItemText primary={recipe.title} />
+              </ListItem>
+            ))
+          : null}
       </List>
       <section css={sectionStyle}>
         <div css={tagSectionStyle}>Tags</div>

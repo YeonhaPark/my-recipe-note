@@ -1,19 +1,17 @@
 import express from 'express';
+import 'express-async-errors';
+import * as recipeController from '../controller/recipes.js';
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  res.status(201).send('GET: /posts');
-});
-router.post('/', (req, res) => {
-  res.status(201).send('POST: /posts');
-});
+router.get('/', recipeController.getRecipes);
 
-router.put('/:id', (req, res) => {
-  res.status(201).send('PUT: /posts/:id');
-});
-router.delete('/:id', (req, res) => {
-  res.status(201).send('DELETE: /posts/:id');
-});
+router.get('/:id', recipeController.getRecipe);
+
+router.post('/', recipeController.postRecipe);
+
+router.put('/:id', recipeController.updateRecipe);
+
+router.delete('/:id', recipeController.deleteRecipe);
 
 export default router;
