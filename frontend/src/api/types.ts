@@ -1,19 +1,22 @@
-export interface Ingredient {
+import { ChipColor } from '../components/atoms/chip';
+
+export interface IngredientType {
   id: number;
+  isChecked?: boolean;
   name: string;
 }
 
-export interface Tag {
-  color: string;
+export interface TagType {
+  color: ChipColor;
   label: string;
 }
 
-export interface Recipes {
+export interface RecipesType {
   id: string;
   title: string;
-  ingredients: Ingredient[];
+  ingredients: IngredientType[];
   contents: string;
-  tags: Tag[];
+  tags: TagType[];
   createdAt: Date;
   modifiedAt: Date;
 }

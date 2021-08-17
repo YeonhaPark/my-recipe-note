@@ -1,9 +1,10 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
-import { useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { Drawer, Note } from '../organisms';
 import { apiProvider } from '../../api/providers';
+import { IngredientType, RecipesType, TagType } from '../../api/types';
 
 const mainStyle = css`
   display: grid;
@@ -12,9 +13,103 @@ const mainStyle = css`
 `;
 
 export default function Main(): JSX.Element {
-  const getAllPosts = async () => {
+  const [recipeList, setRecipeList] = useState<RecipesType[]>([]);
+  const [recipeID, setRecipeID] = useState<string>('');
+  const [title, setTitle] = useState<string>('');
+  const [ingredients, setIngredients] = useState<IngredientType[]>([
+    { id: 1, isChecked: false, name: '' },
+  ]);
+  const [contents, setContents] = useState<string>('');
+  const [tags, setTags] = useState<TagType[]>([]);
+  const [searchWords, setSearchWords] = useState<string>('');
+
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchWords(e.target.value);
+  };
+
+  const handleSearchClick = async () => {
+    await getAllPosts(searchWords);
+  };
+
+  const getAllPosts = async (title?: string) => {
     try {
-      const result = await apiProvider.getAll('posts');
+      if (title) {
+        const result = await apiProvider.getAll(`recipes?title=${title}`);
+        setRecipeList(result);
+      } else {
+        const result = await apiProvider.getAll('recipes');
+        setRecipeList(result);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleCreate = async () => {
+    try {
+      const data = {
+        title: 'eggroll',
+        ingredients: [
+          { id: 1, name: '4 eggs' },
+          { id: 2, name: '1Tbsp of maple syrup' },
+        ],
+        contents: 'sldkfjlskdjfasdfsadf',
+        tags: [{ color: 'error', label: 'dessert' }],
+      };
+
+      const result = await apiProvider.post('recipes', { data });
+      await getAllPosts();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleCreateNew = () => {
+    setRecipeID('');
+    setTitle('');
+    setIngredients([]);
+    setContents('');
+    setTags([]);
+  };
+
+  const handleUpdate = async () => {
+    try {
+      const subject = { title: 'croissant' };
+      const result = await apiProvider.put(`recipes/${recipeID}`, subject);
+      await getAllPosts();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleUpload = () => {
+    if (recipeID) {
+      // upload
+      handleUpdate();
+    } else {
+      // create
+      handleCreate();
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const result = await apiProvider.remove('recipes', recipeID);
+      // delete 하고 나서 다시 모두 가져올것. getAll
+      await getAllPosts();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleRecipeClick = async (recipeId: string) => {
+    try {
+      const result = await apiProvider.getSingle('recipes', recipeId);
+      setRecipeID(result.id);
+      setTitle(result.title);
+      setIngredients(result.ingredients);
+      setContents(result.contents);
+      setTags(result.tags);
     } catch (err) {
       console.error(err);
     }
@@ -24,8 +119,27 @@ export default function Main(): JSX.Element {
   }, []);
   return (
     <div css={mainStyle}>
-      <Drawer />
-      <Note />
+      <Drawer
+        onCreateNew={handleCreateNew}
+        recipeList={recipeList}
+        onRecipeClick={handleRecipeClick}
+        searchWords={searchWords}
+        onSearch={handleSearch}
+        onSearchClick={handleSearchClick}
+      />
+      <Note
+        onUpload={handleUpload}
+        onDelete={handleDelete}
+        recipeID={recipeID}
+        title={title}
+        setTitle={setTitle}
+        ingredients={ingredients}
+        setIngredients={setIngredients}
+        contents={contents}
+        setContents={setContents}
+        tags={tags}
+        setTags={setTags}
+      />
     </div>
   );
 }

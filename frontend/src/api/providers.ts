@@ -21,8 +21,10 @@ const getSingle = async (
   id: string,
 ): Promise<RecipesType> => {
   try {
-    const data = await axios.get(`${BASE_URL}/${resource}/${id}`, { headers });
-    return handleResponse(data);
+    const response = await axios.get(`${BASE_URL}/${resource}/${id}`, {
+      headers,
+    });
+    return handleResponse(response);
   } catch (err) {
     return handleError(err);
   }
@@ -33,10 +35,10 @@ const post = async (
   model: AxiosRequestConfig | undefined,
 ) => {
   try {
-    const data = await axios.post(`${BASE_URL}/${resource}`, model, {
+    const response = await axios.post(`${BASE_URL}/${resource}`, model, {
       headers,
     });
-    return handleResponse(data);
+    return handleResponse(response);
   } catch (err) {
     return handleError(err);
   }
