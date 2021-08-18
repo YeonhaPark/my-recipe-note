@@ -32,15 +32,13 @@ export default function Ingredient({
 }: Props) {
   return (
     <div css={checkboxStyle}>
-      <label htmlFor="ingredient">
-        <Checkbox
-          id={ingredientId}
-          checked={checked}
-          onCheckboxChange={onCheckboxChange}
-          name={`checkbox-${ingredientId}`}
-          color="primary"
-        />
-      </label>
+      <Checkbox
+        id={ingredientId}
+        checked={checked}
+        onCheckboxChange={onCheckboxChange}
+        name={`checkbox-${ingredientId}`}
+        color="primary"
+      />
       <input
         id={`input-${ingredientId.toString()}`}
         type="text"

@@ -1,4 +1,4 @@
-import { shallow, mount } from 'enzyme';
+import { mount } from 'enzyme';
 import { Chip, ChipColor } from '../atoms';
 import renderer from 'react-test-renderer';
 
