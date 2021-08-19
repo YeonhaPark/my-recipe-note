@@ -18,7 +18,7 @@ interface Props {
     | 'basic'
     | undefined;
   children: ReactNode;
-  onClick: (e: MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
 }
 
 export const MIconButton = <
@@ -30,7 +30,7 @@ export const MIconButton = <
   return <IconButton {...props} />;
 };
 
-const CustomButton = withStyles({
+const CustomIcon = withStyles({
   root: {
     boxShadow: 'none',
   },
