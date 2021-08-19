@@ -124,7 +124,7 @@ export default function Drawer({
       </div>
       <List>
         {recipeList
-          ? recipeList.map((recipe, index) => (
+          ? recipeList.map((recipe) => (
               <ListItem
                 button
                 onClick={() => onRecipeClick(recipe.id)}

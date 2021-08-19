@@ -30,19 +30,10 @@ describe('Drawer', () => {
     renderDrawer();
   });
 
-  it('renders exact prop provided', () => {
+  it('open drawer when drawerOpen prop value is true', () => {
     const drawer = renderDrawer();
-
-    expect(drawer.prop('drawer')).toEqual([
-      {
-        label: 'korean',
-        color: 'info' as ChipColor,
-      },
-      {
-        label: 'japanese',
-        color: 'error' as ChipColor,
-      },
-    ]);
+    drawer.setProps({ drawerOpen: false });
+    expect(drawer.prop('drawerOpen')).toEqual(false);
   });
 
   it('matches snapshot', () => {

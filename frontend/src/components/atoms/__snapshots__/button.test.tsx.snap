@@ -2,7 +2,7 @@
 
 exports[`button match snapshot 1`] = `
 <button
-  className="ForwardRef(Button)-root-1 MuiButton-root MuiButton-text MuiButton-textInherit MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorInherit MuiButtonBase-root css-1y942vo-MuiButtonBase-root-MuiButton-root"
+  className="IButton-root-1 MuiButton-root MuiButton-text MuiButton-textInherit MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorInherit MuiButtonBase-root css-1y942vo-MuiButtonBase-root-MuiButton-root"
   disabled={false}
   onBlur={[Function]}
   onContextMenu={[Function]}
