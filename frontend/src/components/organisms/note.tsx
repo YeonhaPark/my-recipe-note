@@ -10,17 +10,11 @@ import {
   SetStateAction,
 } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExpandAlt } from '@fortawesome/free-solid-svg-icons';
-import {
-  TextField,
-  Input,
-  Menu,
-  MenuItem,
-  IconButton,
-} from '@material-ui/core';
+import { faCompressAlt, faExpandAlt } from '@fortawesome/free-solid-svg-icons';
+import { TextField, Input, Menu, MenuItem } from '@material-ui/core';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { makeStyles } from '@material-ui/styles';
-import { Button } from '../atoms';
+import { IconButton, Button } from '../atoms';
 import { IngredientType, TagType } from '../../api/types';
 import { Ingredient, Tags } from '../molecules';
 
@@ -38,7 +32,6 @@ const noteStyle = css`
 
 const headerStyle = css`
   position: relative;
-  padding: 0 0.75rem;
   justify-content: space-between;
   display: flex;
   align-items: center;
@@ -77,6 +70,8 @@ const contentTextFieldStyle = css`
 `;
 
 interface Props {
+  drawerOpen: boolean;
+  onExpandClick: () => void;
   onUpload: () => void;
   onDelete: () => void;
   recipeID: string;
@@ -92,6 +87,8 @@ interface Props {
 
 // UPLOAD or CREATE
 export default function Note({
+  drawerOpen,
+  onExpandClick,
   onUpload,
   onDelete,
   recipeID,
@@ -201,7 +198,13 @@ export default function Note({
   return (
     <main css={noteStyle}>
       <header css={headerStyle}>
-        <FontAwesomeIcon icon={faExpandAlt} />
+        <IconButton color="basic" onClick={onExpandClick}>
+          {drawerOpen ? (
+            <FontAwesomeIcon icon={faExpandAlt} />
+          ) : (
+            <FontAwesomeIcon icon={faCompressAlt} />
+          )}
+        </IconButton>
         <div
           css={css`
             display: flex;

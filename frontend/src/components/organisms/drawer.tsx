@@ -7,13 +7,12 @@ import {
   List,
   ListItem,
   ListItemText,
-  IconButton,
   Input,
 } from '@material-ui/core';
 import { RecipesType } from '../../api/types';
 import { makeStyles } from '@material-ui/styles';
 import { NoteAdd, Search } from '@material-ui/icons';
-import { Chip } from '../atoms';
+import { Chip, IconButton } from '../atoms';
 import { gray } from '../../theme/colors';
 
 const useStyles = makeStyles({
@@ -62,6 +61,7 @@ const tagSectionStyle = css`
 `;
 
 interface Props {
+  drawerOpen: boolean;
   onCreateNew: () => void;
   recipeList: RecipesType[];
   onRecipeClick: (id: string) => void;
@@ -71,6 +71,7 @@ interface Props {
 }
 
 export default function Drawer({
+  drawerOpen,
   onCreateNew,
   recipeList,
   onRecipeClick,
@@ -78,12 +79,8 @@ export default function Drawer({
   onSearch,
   onSearchClick,
 }: Props) {
-  const [open, setOpen] = useState<boolean>(true);
-
   const searchStyle = useStyles();
-  const handleDrawerOpen = () => {
-    setOpen((prev) => !prev);
-  };
+
   return (
     <MDrawer
       sx={{
@@ -96,7 +93,7 @@ export default function Drawer({
       }}
       variant="persistent"
       anchor="left"
-      open
+      open={drawerOpen}
     >
       <header css={headerStyle}>
         <div css={divider}>
