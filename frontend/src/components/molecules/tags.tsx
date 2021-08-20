@@ -5,7 +5,6 @@ import { Chip, ChipColor } from '../atoms';
 import { Autocomplete, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { useState, useEffect } from 'react';
-import { TagType } from '../../api/types';
 
 const tagStyle = css`
   font-size: 0.75rem;
@@ -18,8 +17,8 @@ const useStyles = makeStyles({
 });
 
 interface Props {
-  tags: TagType[];
-  setTags: React.Dispatch<React.SetStateAction<TagType[]>>;
+  tags: string[];
+  setTags: React.Dispatch<React.SetStateAction<string[]>>;
 }
 const colors = [
   'primary',
@@ -34,31 +33,13 @@ export default function Tags({ tags, setTags }: Props) {
   const classes = useStyles();
 
   const [currentTagValue, setCurrentTagValue] = useState('');
-  const [tagLabels, setTagLabels] = useState<string[]>(['']);
-
-  // const addTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-  //   if (e.key === 'Enter') {
-  //     console.log('한번클릭했어여');
-  //     const target = e.target as HTMLInputElement;
-  //     const labelChipArr = tags.map((tag) => tag.label);
-  //     if (!labelChipArr.includes(target.value)) {
-  //       const randomColorIdx = Math.floor(Math.random() * colors.length);
-  //       const randomColor: ChipColor = colors[randomColorIdx] as ChipColor;
-  //       setTags([...tags, { label: target.value, color: randomColor }]);
-  //     }
-  //   }
-  // }; 삭제해도될듯?
 
   const handleChange = (e: object, value: string[], reason: string) => {
     if (reason === 'clear') {
       setTags([]);
     }
-    setTagLabels(value);
+    setTags(value);
   };
-
-  useEffect(() => {
-    setTagLabels(tags.map((tag) => tag.label));
-  }, [tags]);
 
   useEffect(() => {
     const event = new Event('change', {
@@ -75,23 +56,17 @@ export default function Tags({ tags, setTags }: Props) {
         onChange={handleChange}
         multiple
         id="tags-standard"
-        options={tags.map((option) => option.label)}
+        options={tags}
         freeSolo
-        value={tagLabels}
+        value={tags}
         renderTags={(value, getTagProps) => {
-          const newTags = value.map((val: string, index: number) => {
-            return {
-              label: val,
-              color: colors[index] as ChipColor,
-            };
-          });
-          const chips = newTags.map((tag: TagType, index: number) => (
+          const chips = value.map((label: string, index: number) => (
             <Chip
               {...getTagProps({ index })}
-              key={tag.label}
-              color={tag.color}
+              key={label}
+              color={colors[index] as ChipColor}
               variant="filled"
-              label={tag.label}
+              label={label}
             />
           ));
           return (
