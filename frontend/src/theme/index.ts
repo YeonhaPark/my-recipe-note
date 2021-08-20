@@ -1,6 +1,7 @@
 import { createTheme } from '@material-ui/core/styles';
 import {
   black,
+  lightBeige,
   indigo,
   indigoLight,
   yellow,
@@ -21,6 +22,10 @@ const theme = createTheme({
     warning: {
       main: yellow,
       light: yellowLight,
+    },
+    basic: {
+      main: black,
+      light: lightBeige,
     },
   },
   typography: {

@@ -12,6 +12,10 @@ const mainStyle = css`
   height: 100vh;
 `;
 
+const drawerClosed = css`
+  height: 100vh;
+`;
+
 export default function Main(): JSX.Element {
   const [recipeList, setRecipeList] = useState<RecipesType[]>([]);
   const [recipeID, setRecipeID] = useState<string>('');
@@ -22,11 +26,15 @@ export default function Main(): JSX.Element {
   const [contents, setContents] = useState<string>('');
   const [tags, setTags] = useState<TagType[]>([]);
   const [searchWords, setSearchWords] = useState<string>('');
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(true);
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchWords(e.target.value);
   };
 
+  const handleDrawerOpen = () => {
+    setDrawerOpen((prev) => !prev);
+  };
   const handleSearchClick = async () => {
     await getAllPosts(searchWords);
   };
@@ -118,8 +126,9 @@ export default function Main(): JSX.Element {
     getAllPosts();
   }, []);
   return (
-    <div css={mainStyle}>
+    <div css={drawerOpen ? mainStyle : drawerClosed}>
       <Drawer
+        drawerOpen={drawerOpen}
         onCreateNew={handleCreateNew}
         recipeList={recipeList}
         onRecipeClick={handleRecipeClick}
@@ -128,6 +137,9 @@ export default function Main(): JSX.Element {
         onSearchClick={handleSearchClick}
       />
       <Note
+        mode="CREATE"
+        drawerOpen={drawerOpen}
+        onExpandClick={handleDrawerOpen}
         onUpload={handleUpload}
         onDelete={handleDelete}
         recipeID={recipeID}

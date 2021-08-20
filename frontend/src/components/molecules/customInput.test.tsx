@@ -27,9 +27,4 @@ describe('Input', () => {
     customInput.setProps({ required: false });
     expect(customInput.prop('required')).toEqual(false);
   });
-
-  it('matches snapshot', () => {
-    const tree = renderer.create(<Input {...InputProps} />).toJSON();
-    expect(tree).toMatchSnapshot();
-  });
 });

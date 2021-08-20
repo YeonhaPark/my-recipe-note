@@ -29,8 +29,4 @@ describe('Ingredient', () => {
     const ingredient = renderIngredient();
     expect(ingredient.find('input#input-1')).toHaveLength(1);
   });
-  it('matches snapshot', () => {
-    const tree = renderer.create(<Ingredient {...IngredientProps} />).toJSON();
-    expect(tree).toMatchSnapshot();
-  });
 });

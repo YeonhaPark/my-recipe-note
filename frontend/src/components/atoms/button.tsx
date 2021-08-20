@@ -1,7 +1,19 @@
 import { ReactNode } from 'react';
-import { Button as MButton } from '@material-ui/core';
+import {
+  Button as MButton,
+  ButtonTypeMap,
+  ButtonProps,
+} from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 
+export const IButton = <
+  D extends React.ElementType = ButtonTypeMap['defaultComponent'],
+  P = {},
+>(
+  props: ButtonProps<D, P>,
+) => {
+  return <MButton {...props} />;
+};
 interface Props {
   onClick?: () => void;
   children: string | ReactNode;
@@ -16,6 +28,7 @@ interface Props {
     | 'error'
     | 'info'
     | 'warning'
+    | 'basic'
     | undefined;
 }
 
@@ -23,7 +36,7 @@ const CustomButton = withStyles({
   root: {
     boxShadow: 'none',
   },
-})(MButton);
+})(IButton);
 
 export default function Button({
   onClick,

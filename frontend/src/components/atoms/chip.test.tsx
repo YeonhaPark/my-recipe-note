@@ -19,9 +19,4 @@ describe('Chip', () => {
     chip.setProps({ label: 'chinese' });
     expect(chip.text()).toEqual('chinese');
   });
-
-  it('matches snapshot', () => {
-    const tree = renderer.create(<Chip {...chipProps} />).toJSON();
-    expect(tree).toMatchSnapshot();
-  });
 });

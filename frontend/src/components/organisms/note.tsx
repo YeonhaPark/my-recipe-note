@@ -10,18 +10,12 @@ import {
   SetStateAction,
 } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExpandAlt } from '@fortawesome/free-solid-svg-icons';
-import {
-  TextField,
-  Input,
-  Menu,
-  MenuItem,
-  IconButton,
-} from '@material-ui/core';
+import { faCompressAlt, faExpandAlt } from '@fortawesome/free-solid-svg-icons';
+import { TextField, Input, Menu, MenuItem } from '@material-ui/core';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { makeStyles } from '@material-ui/styles';
-import { Button } from '../atoms';
-import { IngredientType, TagType } from '../../api/types';
+import { IconButton, Button } from '../atoms';
+import { IngredientType, TagType, Mode } from '../../api/types';
 import { Ingredient, Tags } from '../molecules';
 
 const useStyles = makeStyles({
@@ -38,7 +32,6 @@ const noteStyle = css`
 
 const headerStyle = css`
   position: relative;
-  padding: 0 0.75rem;
   justify-content: space-between;
   display: flex;
   align-items: center;
@@ -77,6 +70,9 @@ const contentTextFieldStyle = css`
 `;
 
 interface Props {
+  mode: Mode;
+  drawerOpen: boolean;
+  onExpandClick: () => void;
   onUpload: () => void;
   onDelete: () => void;
   recipeID: string;
@@ -92,6 +88,9 @@ interface Props {
 
 // UPLOAD or CREATE
 export default function Note({
+  mode,
+  drawerOpen,
+  onExpandClick,
   onUpload,
   onDelete,
   recipeID,
@@ -198,10 +197,22 @@ export default function Note({
     document.getElementById(currentFocus.toString())?.focus();
   }, [currentFocus]);
 
+  useEffect(() => {
+    // in case of create mode
+    if (mode === 'CREATE') {
+      document.getElementById('title')?.focus();
+    }
+  }, [mode]);
   return (
     <main css={noteStyle}>
       <header css={headerStyle}>
-        <FontAwesomeIcon icon={faExpandAlt} />
+        <IconButton color="basic" onClick={onExpandClick}>
+          {drawerOpen ? (
+            <FontAwesomeIcon data-test="fa-expand" icon={faExpandAlt} />
+          ) : (
+            <FontAwesomeIcon data-test="fa-compress" icon={faCompressAlt} />
+          )}
+        </IconButton>
         <div
           css={css`
             display: flex;
@@ -209,6 +220,7 @@ export default function Note({
           `}
         >
           <IconButton
+            data-test="simple-menu"
             aria-controls="simple-menu"
             aria-haspopup="true"
             onClick={handleBurgerClick}
@@ -226,6 +238,7 @@ export default function Note({
             <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
           </Menu>
           <Button
+            data-test="upload-btn"
             style={{ marginLeft: '0.5rem' }}
             onClick={onUpload}
             color="secondary"
@@ -240,12 +253,14 @@ export default function Note({
           <span>Recipe title</span>
         </div>
         <Input
+          data-test="title"
           classes={titleStyle}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           type="text"
           placeholder="Type here"
           fullWidth
+          required
         />
       </div>
       <div css={commonInputStyle}>
@@ -254,7 +269,7 @@ export default function Note({
         </div>
         {ingredients.map((ingredient) => (
           <Ingredient
-            data-testid={`ingredient-${ingredient.id}`}
+            data-test="ingredients"
             key={ingredient.id}
             checked={ingredient.isChecked}
             value={ingredient.name}
@@ -269,7 +284,7 @@ export default function Note({
         <div css={commonTitleStyle}>
           <span>Contents</span>
         </div>
-        <div css={contentTextFieldStyle}>
+        <div data-test="contents" css={contentTextFieldStyle}>
           <TextField
             id="content"
             value={contents}

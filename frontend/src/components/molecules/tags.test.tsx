@@ -38,9 +38,4 @@ describe('Tags', () => {
       },
     ]);
   });
-
-  it('matches snapshot', () => {
-    const tree = renderer.create(<Tags {...TagsProps} />).toJSON();
-    expect(tree).toMatchSnapshot();
-  });
 });
