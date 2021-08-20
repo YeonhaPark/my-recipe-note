@@ -1,5 +1,8 @@
 import * as recipeRepository from '../data/allRecipes.js';
 
+/**
+ * 들어오는 데이터, 보내지는 데이터에 대한 백엔드 로직을 처리
+ */
 export async function getRecipes(req, res) {
   const title = req.query.title;
   if (title) {
@@ -23,8 +26,8 @@ export async function getRecipe(req, res) {
 
 export async function postRecipe(req, res) {
   const { title, ingredients, contents, tags } = req.body;
-
   const recipe = {
+    id: Date.now().toString(),
     title,
     ingredients,
     contents,
@@ -40,6 +43,7 @@ export async function postRecipe(req, res) {
 export async function updateRecipe(req, res) {
   const { id } = req.params;
   const { body } = req;
+  console.log('req.body:', body);
   const updated = await recipeRepository.update(id, body);
   res.status(200).json(updated);
 }
