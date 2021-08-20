@@ -197,14 +197,20 @@ export default function Note({
     document.getElementById(currentFocus.toString())?.focus();
   }, [currentFocus]);
 
+  useEffect(() => {
+    // in case of create mode
+    if (mode === 'CREATE') {
+      document.getElementById('title')?.focus();
+    }
+  }, [mode]);
   return (
     <main css={noteStyle}>
       <header css={headerStyle}>
         <IconButton color="basic" onClick={onExpandClick}>
           {drawerOpen ? (
-            <FontAwesomeIcon icon={faExpandAlt} />
+            <FontAwesomeIcon data-test="fa-expand" icon={faExpandAlt} />
           ) : (
-            <FontAwesomeIcon icon={faCompressAlt} />
+            <FontAwesomeIcon data-test="fa-compress" icon={faCompressAlt} />
           )}
         </IconButton>
         <div
@@ -214,6 +220,7 @@ export default function Note({
           `}
         >
           <IconButton
+            data-test="simple-menu"
             aria-controls="simple-menu"
             aria-haspopup="true"
             onClick={handleBurgerClick}
@@ -231,6 +238,7 @@ export default function Note({
             <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
           </Menu>
           <Button
+            data-test="upload-btn"
             style={{ marginLeft: '0.5rem' }}
             onClick={onUpload}
             color="secondary"
@@ -245,12 +253,14 @@ export default function Note({
           <span>Recipe title</span>
         </div>
         <Input
+          data-test="title"
           classes={titleStyle}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           type="text"
           placeholder="Type here"
           fullWidth
+          required
         />
       </div>
       <div css={commonInputStyle}>
@@ -259,7 +269,7 @@ export default function Note({
         </div>
         {ingredients.map((ingredient) => (
           <Ingredient
-            data-testid={`ingredient-${ingredient.id}`}
+            data-test="ingredients"
             key={ingredient.id}
             checked={ingredient.isChecked}
             value={ingredient.name}
@@ -274,7 +284,7 @@ export default function Note({
         <div css={commonTitleStyle}>
           <span>Contents</span>
         </div>
-        <div css={contentTextFieldStyle}>
+        <div data-test="contents" css={contentTextFieldStyle}>
           <TextField
             id="content"
             value={contents}
