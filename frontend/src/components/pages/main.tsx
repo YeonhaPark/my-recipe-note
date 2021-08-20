@@ -4,7 +4,7 @@ import { jsx, css } from '@emotion/react';
 import { useState, useEffect, ChangeEvent } from 'react';
 import { Drawer, Note } from '../organisms';
 import { apiProvider } from '../../api/providers';
-import { IngredientType, RecipesType, TagType } from '../../api/types';
+import { IngredientType, RecipesType } from '../../api/types';
 
 const mainStyle = css`
   display: grid;
@@ -24,7 +24,7 @@ export default function Main(): JSX.Element {
     { id: 1, isChecked: false, name: '' },
   ]);
   const [contents, setContents] = useState<string>('');
-  const [tags, setTags] = useState<TagType[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
   const [searchWords, setSearchWords] = useState<string>('');
   const [drawerOpen, setDrawerOpen] = useState<boolean>(true);
 
@@ -56,16 +56,13 @@ export default function Main(): JSX.Element {
   const handleCreate = async () => {
     try {
       const data = {
-        title: 'eggroll',
-        ingredients: [
-          { id: 1, name: '4 eggs' },
-          { id: 2, name: '1Tbsp of maple syrup' },
-        ],
-        contents: 'sldkfjlskdjfasdfsadf',
-        tags: [{ color: 'error', label: 'dessert' }],
+        title,
+        ingredients,
+        contents,
+        tags,
       };
 
-      const result = await apiProvider.post('recipes', { data });
+      const result = await apiProvider.post('recipes', data);
       await getAllPosts();
     } catch (err) {
       console.error(err);
@@ -82,8 +79,13 @@ export default function Main(): JSX.Element {
 
   const handleUpdate = async () => {
     try {
-      const subject = { title: 'croissant' };
-      const result = await apiProvider.put(`recipes/${recipeID}`, subject);
+      const data = {
+        title,
+        ingredients,
+        contents,
+        tags,
+      };
+      const result = await apiProvider.put(`recipes/${recipeID}`, data);
       await getAllPosts();
     } catch (err) {
       console.error(err);
@@ -125,6 +127,10 @@ export default function Main(): JSX.Element {
   useEffect(() => {
     getAllPosts();
   }, []);
+
+  useEffect(() => {
+    if (recipeList[0]) handleRecipeClick(recipeList[0].id);
+  }, [recipeList]);
   return (
     <div css={drawerOpen ? mainStyle : drawerClosed}>
       <Drawer

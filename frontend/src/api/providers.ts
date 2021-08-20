@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import { handleResponse, handleError } from './handlers';
 import { RecipesType } from './types';
 
@@ -30,12 +30,9 @@ const getSingle = async (
   }
 };
 
-const post = async (
-  resource: string,
-  model: AxiosRequestConfig | undefined,
-) => {
+const post = async (resource: string, data: any) => {
   try {
-    const response = await axios.post(`${BASE_URL}/${resource}`, model, {
+    const response = await axios.post(`${BASE_URL}/${resource}`, data, {
       headers,
     });
     return handleResponse(response);
@@ -47,20 +44,6 @@ const post = async (
 const put = async (resource: string, recipe: any) => {
   try {
     const data = await axios.put(`${BASE_URL}/${resource}`, recipe, {
-      headers,
-    });
-    return handleResponse(data);
-  } catch (err) {
-    return handleError(err);
-  }
-};
-
-const patch = async (
-  resource: string,
-  model: AxiosRequestConfig | undefined,
-) => {
-  try {
-    const data = await axios.patch(`${BASE_URL}/${resource}`, model, {
       headers,
     });
     return handleResponse(data);
@@ -85,6 +68,5 @@ export const apiProvider = {
   getSingle,
   post,
   put,
-  patch,
   remove,
 };

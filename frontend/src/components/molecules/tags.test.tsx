@@ -1,19 +1,8 @@
 import { mount } from 'enzyme';
 import { Tags } from '../molecules';
-import renderer from 'react-test-renderer';
-import { ChipColor } from '../atoms';
 
 const TagsProps = {
-  tags: [
-    {
-      label: 'korean',
-      color: 'info' as ChipColor,
-    },
-    {
-      label: 'japanese',
-      color: 'error' as ChipColor,
-    },
-  ],
+  tags: ['korean', 'japanese'],
   setTags: () => {},
 };
 
@@ -27,15 +16,6 @@ describe('Tags', () => {
   it('renders exact prop provided', () => {
     const tags = renderTags();
 
-    expect(tags.prop('tags')).toEqual([
-      {
-        label: 'korean',
-        color: 'info' as ChipColor,
-      },
-      {
-        label: 'japanese',
-        color: 'error' as ChipColor,
-      },
-    ]);
+    expect(tags.prop('tags')).toEqual(['korean', 'japanese']);
   });
 });

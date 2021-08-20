@@ -15,7 +15,7 @@ import { TextField, Input, Menu, MenuItem } from '@material-ui/core';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { makeStyles } from '@material-ui/styles';
 import { IconButton, Button } from '../atoms';
-import { IngredientType, TagType, Mode } from '../../api/types';
+import { IngredientType, Mode } from '../../api/types';
 import { Ingredient, Tags } from '../molecules';
 
 const useStyles = makeStyles({
@@ -82,8 +82,8 @@ interface Props {
   setIngredients: Dispatch<SetStateAction<IngredientType[]>>;
   contents: string;
   setContents: Dispatch<SetStateAction<string>>;
-  tags: TagType[];
-  setTags: Dispatch<SetStateAction<TagType[]>>;
+  tags: string[];
+  setTags: Dispatch<SetStateAction<string[]>>;
 }
 
 // UPLOAD or CREATE
