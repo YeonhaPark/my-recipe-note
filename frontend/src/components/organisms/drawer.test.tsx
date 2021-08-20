@@ -35,9 +35,4 @@ describe('Drawer', () => {
     drawer.setProps({ drawerOpen: false });
     expect(drawer.prop('drawerOpen')).toEqual(false);
   });
-
-  it('matches snapshot', () => {
-    const tree = renderer.create(<Drawer {...DrawerProps} />).toJSON();
-    expect(tree).toMatchSnapshot();
-  });
 });

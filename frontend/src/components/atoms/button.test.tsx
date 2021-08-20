@@ -11,9 +11,4 @@ describe('button', () => {
     const button = shallow(<Button children="Hi my name is button" />);
     expect(button.text()).toEqual('Hi my name is button');
   });
-
-  it('match snapshot', () => {
-    const tree = renderer.create(<Button children="button" />).toJSON();
-    expect(tree).toMatchSnapshot();
-  });
 });
