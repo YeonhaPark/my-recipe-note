@@ -1,5 +1,6 @@
 import { ChipColor } from '../components/atoms/chip';
 
+export type Mode = 'CREATE' | 'MODIFY';
 export interface IngredientType {
   id: number;
   isChecked?: boolean;

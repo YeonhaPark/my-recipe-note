@@ -137,6 +137,7 @@ export default function Main(): JSX.Element {
         onSearchClick={handleSearchClick}
       />
       <Note
+        mode="CREATE"
         drawerOpen={drawerOpen}
         onExpandClick={handleDrawerOpen}
         onUpload={handleUpload}
