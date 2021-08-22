@@ -1,6 +1,7 @@
 import express from 'express';
 import { body } from 'express-validator';
 import 'express-async-errors';
+import { isAuth } from '../middleware/auth.js';
 import * as recipeController from '../controller/recipes.js';
 import { validate } from '../middleware/validator.js';
 
@@ -18,12 +19,12 @@ const validateRecipe = [
 ];
 router.get('/', recipeController.getRecipes);
 
-router.get('/:id', recipeController.getRecipe);
+router.get('/:id', isAuth, recipeController.getRecipe);
 
-router.post('/', validateRecipe, recipeController.postRecipe);
+router.post('/', isAuth, validateRecipe, recipeController.postRecipe);
 
-router.put('/:id', validateRecipe, recipeController.updateRecipe);
+router.put('/:id', isAuth, validateRecipe, recipeController.updateRecipe);
 
-router.delete('/:id', recipeController.deleteRecipe);
+router.delete('/:id', isAuth, recipeController.deleteRecipe);
 
 export default router;

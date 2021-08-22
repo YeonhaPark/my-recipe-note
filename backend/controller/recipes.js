@@ -4,6 +4,9 @@ import * as recipeRepository from '../data/allRecipes.js';
  * 들어오는 데이터, 보내지는 데이터에 대한 백엔드 로직을 처리
  */
 export async function getRecipes(req, res) {
+  if (!req.headers.authorization) {
+    return res.status(401).json({ message: 'No credentials sent' });
+  }
   const title = req.query.title;
   if (title) {
     const result = await recipeRepository.getByTitle(title);
@@ -20,7 +23,7 @@ export async function getRecipe(req, res) {
   if (detail) {
     res.status(200).json(detail);
   } else {
-    res.status(404).json({ message: `Note ${req.params.id} not found` });
+    return res.status(404).json({ message: `Note ${req.params.id} not found` });
   }
 }
 

@@ -1,10 +1,11 @@
 import express from 'express';
-import postRouter from './router/post.js';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan'; // 사용자에게 받은 요청에 대해 매번 console해줄 필요 없이 자동으로 로그 생성 https://github.com/expressjs/morgan
 import helmet from 'helmet'; // 공통적으로 보안에 필요한 헤더들을 추가해줌
 import 'express-async-errors';
+import postRouter from './router/post.js';
+import authRouter from './router/auth.js';
 
 const app = express();
 
@@ -34,6 +35,7 @@ const options = {
 app.use(express.static('public', options)); // 사용자가 public 폴더 안에 있는 리소스에 접근이 가능함
 
 app.use('/recipes', postRouter);
+app.use('/auth', authRouter);
 
 app.use((req, res, next) => {
   res.sendStatus(404);

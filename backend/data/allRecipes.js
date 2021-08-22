@@ -8,8 +8,8 @@ let allRecipes = [
     ],
     contents: 'sldkfjlskdjfasdfsadf',
     tags: ['자주먹는'],
-    createdAt: '2021-08-15T02:22:35.155Z',
-    modifiedAt: '2021-08-15T02:22:35.155Z',
+    createdAt: new Date().toString(),
+    modifiedAt: new Date().toString(),
   },
   {
     id: '9',
@@ -20,8 +20,8 @@ let allRecipes = [
     ],
     contents: 'sldkfjlskdjfasdfsadf',
     tags: ['자주먹는'],
-    createdAt: '2021-08-15T02:22:35.155Z',
-    modifiedAt: '2021-08-15T02:22:35.155Z',
+    createdAt: new Date().toString(),
+    modifiedAt: new Date().toString(),
   },
   {
     id: '10',
@@ -33,8 +33,8 @@ let allRecipes = [
     ],
     contents: 'sldkfjlskdjfasdfsadf',
     tags: ['french', 'dessert'],
-    createdAt: '2021-08-15T02:22:35.155Z',
-    modifiedAt: '2021-08-15T02:22:35.155Z',
+    createdAt: new Date().toString(),
+    modifiedAt: new Date().toString(),
   },
 ];
 
