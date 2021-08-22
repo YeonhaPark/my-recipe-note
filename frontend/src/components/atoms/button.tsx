@@ -30,6 +30,8 @@ interface Props {
     | 'warning'
     | 'basic'
     | undefined;
+  type?: string;
+  form?: string;
 }
 
 const CustomButton = withStyles({
@@ -45,6 +47,8 @@ export default function Button({
   variant,
   fullWidth,
   style,
+  type,
+  form,
 }: Props): JSX.Element {
   return (
     <CustomButton
@@ -53,6 +57,8 @@ export default function Button({
       style={style}
       variant={variant}
       fullWidth={fullWidth}
+      type={type}
+      form={form}
     >
       {children}
     </CustomButton>

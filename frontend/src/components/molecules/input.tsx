@@ -2,14 +2,17 @@
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
 import { Input as MInput, InputLabel } from '@material-ui/core';
+import { RefObject } from 'react';
 
 interface Props {
+  myRef: React.Ref<string>;
   labelName: string;
   type: string;
   placeholder: string;
   required?: boolean;
 }
 export default function Input({
+  myRef,
   labelName,
   type,
   placeholder,
@@ -23,6 +26,7 @@ export default function Input({
     >
       <InputLabel htmlFor={labelName}>{labelName}</InputLabel>
       <MInput
+        inputRef={myRef}
         type={type}
         id={labelName}
         fullWidth

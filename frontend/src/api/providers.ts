@@ -4,8 +4,11 @@ import { RecipesType } from './types';
 
 const BASE_URL = process.env.REACT_APP_SERVER_DEV;
 
+const jwtToken = localStorage.getItem('token');
+
 const headers = {
   'Content-Type': 'application/json',
+  Authorization: `Bearer ${jwtToken}`,
 };
 const getAll = async (resource: string) => {
   try {
@@ -41,6 +44,16 @@ const post = async (resource: string, data: any) => {
   }
 };
 
+const postLogin = async (resource: string, model: any) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/${resource}`, model, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return handleResponse(response);
+  } catch (err) {
+    return handleError(err);
+  }
+};
 const put = async (resource: string, recipe: any) => {
   try {
     const data = await axios.put(`${BASE_URL}/${resource}`, recipe, {
@@ -67,6 +80,7 @@ export const apiProvider = {
   getAll,
   getSingle,
   post,
+  postLogin,
   put,
   remove,
 };
