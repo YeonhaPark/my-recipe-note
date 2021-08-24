@@ -12,7 +12,8 @@ export async function getRecipes(req, res) {
     const result = await recipeRepository.getByTitle(title);
     res.status(200).json(result);
   } else {
-    const result = await recipeRepository.getAll();
+    // might be changed afterwards (logic wip)
+    const result = await recipeRepository.getAll(req.userId);
     res.status(200).json(result);
   }
 }
