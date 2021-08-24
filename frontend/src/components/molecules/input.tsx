@@ -2,14 +2,14 @@
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
 import { Input as MInput, InputLabel } from '@material-ui/core';
-import { RefObject } from 'react';
 
 interface Props {
-  myRef: React.Ref<string>;
+  myRef: React.Ref<any>;
   labelName: string;
   type: string;
   placeholder: string;
   required?: boolean;
+  autoComplete?: string;
 }
 export default function Input({
   myRef,
@@ -17,6 +17,7 @@ export default function Input({
   type,
   placeholder,
   required,
+  autoComplete,
 }: Props) {
   return (
     <div
@@ -32,6 +33,7 @@ export default function Input({
         fullWidth
         placeholder={placeholder}
         required={required}
+        autoComplete={autoComplete}
       />
     </div>
   );
