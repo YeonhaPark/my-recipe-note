@@ -17,7 +17,7 @@ const validateRecipe = [
   body('contents').notEmpty().withMessage('Content is required'),
   validate,
 ];
-router.get('/', recipeController.getRecipes);
+router.get('/', isAuth, recipeController.getRecipes);
 
 router.get('/:id', isAuth, recipeController.getRecipe);
 
