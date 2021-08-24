@@ -1,19 +1,26 @@
-let users = [
-  { id: '1', password: 'hasehdehlsdbwjspdla', username: 'bsssob@gmail.com' },
-];
+import { db } from '../db/database.js';
 
 export async function findByUsername(username) {
-  // 유저가 가입되어있는지 여부체크
-  return users.find((user) => user.username === username);
+  return db
+    .execute('SELECT * FROM user WHERE username=?', [username])
+    .then((result) => {
+      return result[0][0];
+    });
 }
 
 export async function createUser(user) {
-  const created = { ...user, id: Date.now().toString() };
-  users.push(user);
-
-  return created.id;
+  return db
+    .execute('INSERT INTO user (username, password) VALUES (?,?)', [
+      user.username,
+      user.password,
+    ])
+    .then((result) => {
+      return result[0].insertId;
+    });
 }
 
 export async function findById(id) {
-  return users.find((user) => user.id === id);
+  return db
+    .execute('SELECT * FROM user WHERE id=?', [id])
+    .then((result) => result[0][0]);
 }

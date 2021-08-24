@@ -1,54 +1,31 @@
-let allRecipes = [
-  {
-    id: '8',
-    title: 'taco',
-    ingredients: [
-      { id: 1, isChecked: true, name: '또띠야 10장' },
-      { id: 2, isChecked: false, name: '오래가노 20g' },
-    ],
-    contents: 'sldkfjlskdjfasdfsadf',
-    tags: ['자주먹는'],
-    createdAt: new Date().toString(),
-    modifiedAt: new Date().toString(),
-  },
-  {
-    id: '9',
-    title: '김치볶음밥',
-    ingredients: [
-      { id: 1, isChecked: true, name: '김칩1포기' },
-      { id: 2, isChecked: true, name: '양파1개' },
-    ],
-    contents: 'sldkfjlskdjfasdfsadf',
-    tags: ['자주먹는'],
-    createdAt: new Date().toString(),
-    modifiedAt: new Date().toString(),
-  },
-  {
-    id: '10',
-    title: '크로아상',
-    ingredients: [
-      { id: 1, isChecked: true, name: '중력분 250그램' },
-      { id: 2, isChecked: true, name: '소금 한꼬집' },
-      { id: 3, isChecked: true, name: '설탕 80그램' },
-    ],
-    contents: 'sldkfjlskdjfasdfsadf',
-    tags: ['french', 'dessert'],
-    createdAt: new Date().toString(),
-    modifiedAt: new Date().toString(),
-  },
-];
+import { db } from '../db/database.js';
 
-/**
- * DB단과 연결되는 부분
- *
- */
-
-export async function getAll() {
-  return allRecipes;
+export async function getAll(userId) {
+  console.log('userId:::', userId);
+  const userID = 1;
+  // 로그인한 유저의 레시피들만 가져오기.
+  // 로그인한 유저의 id 가져온다.
+  return db
+    .execute(
+      'SELECT r.*,i.*,t.* from recipe r JOIN recipeIngredient ri ON ri.recipeId=r.id JOIN ingredient i ON i.id=ri.ingredientId JOIN recipeTag rt ON rt.recipeId=r.id JOIN tag t ON t.id=rt.tagId JOIN user u on u.id=r.userId WHERE u.id=?',
+      [userID]
+    )
+    .then((result) => {
+      console.log(result[0]);
+      return result[0];
+    });
 }
 
 export async function getById(id) {
-  return allRecipes.find((recipe) => id === recipe.id);
+  return db
+    .execute(
+      'SELECT r.*,i.*,t.* from recipe r JOIN recipeIngredient ri ON ri.recipeId=r.id JOIN ingredient i ON i.id=ri.ingredientId JOIN recipeTag rt ON rt.recipeId=r.id JOIN tag t ON t.id=rt.tagId JOIN user u on u.id=r.userId WHERE r.id=?',
+      [id]
+    )
+    .then((result) => {
+      console.log(result[0]);
+      return result[0][0];
+    });
 }
 
 export async function getByTitle(title) {
@@ -58,6 +35,11 @@ export async function getByTitle(title) {
 }
 
 export async function create(recipe) {
+  const { title, contents, ingredients } = recipe;
+  return db.execute('INSERT INTO recipe (title, contents) VALUES(?,?)', [
+    title,
+    contents,
+  ]);
   console.log(recipe);
   allRecipes.unshift(recipe);
 }
