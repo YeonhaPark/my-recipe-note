@@ -1,23 +1,20 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import * as userRepository from '../data/auth.js';
+import { config } from '../config.js';
 
-const jwtSecretKey = 'eyJhbGciOiJIUzI1NiJ9';
-const jwtExpiresin = '2d';
-const bcryptSaltRounds = 12;
-
+const { auth } = config;
 function createJwtToken(id) {
-  return jwt.sign({ id }, jwtSecretKey, { expiresIn: jwtExpiresin });
+  return jwt.sign({ id }, auth.jwtSecret, { expiresIn: auth.jwtExpiresSec });
 }
 
 export async function signup(req, res) {
   const { username, password } = req.body;
-  console.log('username===', username);
   if (await userRepository.findByUsername(username)) {
     // 에러 뱉기. 이미 가입한 회원임.
     return res.status(409).json({ message: `${username} already exists` });
   } else {
-    const hashed = await bcrypt.hash(password, bcryptSaltRounds);
+    const hashed = await bcrypt.hash(password, auth.bcryptSaltRounds);
 
     const userId = await userRepository.createUser({
       username,
@@ -30,20 +27,22 @@ export async function signup(req, res) {
 }
 
 export async function login(req, res) {
-  const { username, password } = req.body;
-  const user = userRepository.findByUsername(username);
-  if (!user) {
-    // 에러뱉기. 가입하지 않은 회원임.
-    return res.status(401).json({ message: 'Invalid user or password' });
+  try {
+    const { username, password } = req.body;
+    const user = await userRepository.findByUsername(username);
+    if (!user) {
+      // 에러뱉기. 가입하지 않은 회원임.
+      return res.status(401).json({ message: 'Invalid user or password' });
+    }
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ message: 'Invalid user or password' });
+    }
+    const token = createJwtToken(user.id);
+    res.status(201).json({ token, username });
+  } catch (err) {
+    console.error(err);
   }
-  const isValidPassword = await bcrypt.compare(password, user.password);
-  console.log('isValid?', isValidPassword);
-  if (!isValidPassword) {
-    return res.status(401).json({ message: 'Invalid user or password' });
-  }
-  const token = createJwtToken(user.id);
-  res.status(201).json({ token, username });
-  // token이 만료된 경우 생각
 }
 
 export async function isMe(req, res) {
@@ -51,5 +50,7 @@ export async function isMe(req, res) {
   if (!user) {
     return res.status(404).json({ message: 'User not found' });
   }
-  res.status(200).json({ token: req.token, username: user.username });
+  res
+    .status(200)
+    .json({ token: req.token, username: user.username, userId: user.userId });
 }

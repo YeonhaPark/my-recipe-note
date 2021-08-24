@@ -6,9 +6,9 @@ import helmet from 'helmet'; // 공통적으로 보안에 필요한 헤더들을
 import 'express-async-errors';
 import postRouter from './router/post.js';
 import authRouter from './router/auth.js';
+import { config } from './config.js';
 
 const app = express();
-
 const corsOptions = {
   origin: ['http://localhost:3000'],
   optionsSuccessStatus: 200,
@@ -46,4 +46,4 @@ app.use((err, req, res, next) => {
   res.sendStatus(500);
 });
 
-app.listen(8081);
+app.listen(config.host.port);
