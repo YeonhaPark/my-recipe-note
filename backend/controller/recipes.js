@@ -12,7 +12,7 @@ export async function getRecipes(req, res) {
     const result = await recipeRepository.getByTitle(title);
     res.status(200).json(result);
   } else {
-    // might be changed afterwards (logic wip)
+    // isAuth에서 userId를 등록해주었음
     const result = await recipeRepository.getAll(req.userId);
     res.status(200).json(result);
   }
