@@ -123,7 +123,7 @@ export default function Drawer({
         </IconButton>
       </div>
       <List>
-        {recipeList
+        {recipeList.length
           ? recipeList.map((recipe) => (
               <ListItem
                 button

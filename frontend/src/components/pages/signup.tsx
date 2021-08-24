@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { Container, Divider } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
@@ -45,41 +45,43 @@ const verticallyCentered = css`
   top: 25%;
 `;
 
-export default function Login() {
+export default function Signup() {
   const history = useHistory();
+
   const idEl = useRef<HTMLInputElement>(null);
   const passwordEl = useRef<HTMLInputElement>(null);
+  const repasswordEl = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
       const username = idEl.current && idEl.current.value;
       const password = passwordEl.current && passwordEl.current.value;
-      console.log({ username, password });
-      if (!(username && password))
-        throw new Error('fill out username or password');
-      const { token } = await apiProvider.postAuth('login', {
+      const repassword = repasswordEl.current && repasswordEl.current.value;
+      console.log({ password, repassword });
+      if (password !== repassword) {
+        return alert("Passwords don't match");
+      }
+      const { token } = await apiProvider.postAuth('signup', {
         username,
         password,
       });
-      console.log({ token });
-      if (token) {
-        localStorage.setItem('token', token);
-      }
+      localStorage.setItem('token', token);
       alert('Welcome!');
-      // history.push('/main');
+      history.push('/login');
     } catch (err) {
       console.error(err);
     }
   };
+
   return (
     <ContainerStyled>
       <div css={horizontallyCentered}>
         <div css={verticallyCentered}>
           <header css={headerStyle}>
-            <div>MyRecipeNote</div>
+            <div>Sign Up</div>
           </header>
-          <form id="loginForm" onSubmit={handleSubmit}>
+          <form id="signupForm" onSubmit={handleSignup}>
             <section>
               <Input
                 myRef={idEl}
@@ -94,7 +96,13 @@ export default function Login() {
                 labelName="Password"
                 placeholder="Password"
                 required
-                autoComplete="off"
+              />
+              <Input
+                myRef={repasswordEl}
+                type="password"
+                labelName="Retype Password"
+                placeholder="Retype Password"
+                required
               />
             </section>
           </form>
@@ -106,11 +114,11 @@ export default function Login() {
               color="primary"
               fullWidth
               type="submit"
-              form="loginForm"
+              form="signupForm"
             >
-              Login
+              Signup
             </Button>
-            <Link to="/signup">
+            <Link to="/login">
               <Button
                 style={{ marginBottom: '0.5rem' }}
                 variant="contained"
@@ -118,7 +126,7 @@ export default function Login() {
                 fullWidth
                 type="button"
               >
-                JOIN
+                Back to Login
               </Button>
             </Link>
           </section>

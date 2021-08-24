@@ -8,6 +8,9 @@ export function handleResponse(response: {
     return response.results;
   }
 
+  if (response.data.status === 409) {
+    throw new Error(response.data.message);
+  }
   if (response.data.status > 299 || response.data.status < 200) {
     if (response.data.message) {
       throw new Error(response.data.message);
