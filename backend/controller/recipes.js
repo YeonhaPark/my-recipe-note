@@ -46,7 +46,6 @@ export async function postRecipe(req, res) {
 export async function updateRecipe(req, res) {
   const { id } = req.params;
   const { body } = req;
-  console.log('req.body:', body);
   const updated = await recipeRepository.update(id, body);
   res.status(200).json(updated);
 }

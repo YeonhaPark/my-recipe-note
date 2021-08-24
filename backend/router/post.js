@@ -3,7 +3,7 @@ import { body } from 'express-validator';
 import 'express-async-errors';
 import { isAuth } from '../middleware/auth.js';
 import * as recipeController from '../controller/recipes.js';
-import { validate } from '../middleware/validator.js';
+import { validate } from '../middleware/validate.js';
 
 const router = express.Router();
 
