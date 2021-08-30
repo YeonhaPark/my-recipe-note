@@ -1,9 +1,6 @@
-import { mount, shallow } from 'enzyme';
+import { shallow } from 'enzyme';
 import { Note } from '../organisms';
 import { Mode } from '../../api/types';
-import { Dispatch, SetStateAction } from 'react';
-import { ChipColor } from '../atoms/chip';
-import renderer from 'react-test-renderer';
 
 const NoteProps = {
   mode: 'CREATE' as Mode,
@@ -18,7 +15,7 @@ const NoteProps = {
   setIngredients: () => {},
   contents: 'contents',
   setContents: () => {},
-  tags: [{ color: 'error' as ChipColor, label: 'sweet' }],
+  tags: ['sweet'],
   setTags: () => {},
 };
 
