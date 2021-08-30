@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "username": "hello@cypress.io",
+    "password": "helloCyCy1234"
+  },
+  {
+    "id": 2,
+    "username": "morning@cypress.io",
+    "password": "helmorningyCy1234"
+  },
+  {
+    "id": 3,
+    "username": "hello@gmail.com",
+    "password": "helloCyCy1234"
+  },
+  {
+    "id": 4,
+    "username": "newEve@cypress.io",
+    "password": "newnewCyCy24"
+  },
+  {
+    "id": 4,
+    "username": "againNew@cypress.io",
+    "password": "helloCyCy24512"
+  }
+]
