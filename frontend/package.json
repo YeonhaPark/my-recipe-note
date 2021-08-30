@@ -13,7 +13,7 @@
     "@material-ui/styles": "^4.11.4",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
+    "@testing-library/user-event": "^13.2.1",
     "@types/jest": "^26.0.24",
     "@types/node": "^16.3.2",
     "@types/react": "^17.0.14",
@@ -32,7 +32,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "cypress-test": "cypress open"
+    "cypress-test": "cypress open",
+    "test-coverage": "react-scripts test --coverage"
   },
   "eslintConfig": {
     "extends": [
@@ -73,6 +74,8 @@
     "eslint-plugin-react": "^7.24.0",
     "jest-extended": "^0.11.5",
     "prettier": "^2.3.2",
-    "react-test-renderer": "^17.0.2"
+    "react-test-renderer": "^17.0.2",
+    "ts-jest": "^27.0.5",
+    "ts-node": "^10.2.1"
   }
 }

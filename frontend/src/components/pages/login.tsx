@@ -29,7 +29,7 @@ export default function Login() {
       alert('Welcome!');
       history.push('/main');
     } catch (err) {
-      console.error(err);
+      // console.error(err);
     }
   };
   return (
@@ -59,6 +59,7 @@ export default function Login() {
       <section>
         <Button
           style={{ marginBottom: '0.5rem' }}
+          data-test="login-submit"
           variant="outlined"
           color="primary"
           fullWidth

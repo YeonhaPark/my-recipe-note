@@ -126,6 +126,7 @@ export default function Drawer({
         {recipeList.length
           ? recipeList.map((recipe) => (
               <ListItem
+                data-test="list-item"
                 button
                 onClick={() => onRecipeClick(recipe.id)}
                 key={recipe.id}

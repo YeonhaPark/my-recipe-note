@@ -105,7 +105,6 @@ export default function Note({
 }: Props): JSX.Element {
   const titleStyle = useStyles();
 
-  const [currentFocus, setCurrentFocus] = useState(0);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleBurgerClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -157,7 +156,6 @@ export default function Note({
         }
         setIngredients(newIngredientsList);
 
-        setCurrentFocus(ingredientId + 1);
         setIngredients(newIngredientsList);
         break;
       case 'Backspace':
@@ -165,7 +163,6 @@ export default function Note({
           const filteredIngredientsList = ingredients.filter(
             (ingredient) => ingredient.id !== ingredientId,
           );
-          setCurrentFocus(ingredientId - 1);
           setIngredients(filteredIngredientsList);
         }
         break;
@@ -193,16 +190,6 @@ export default function Note({
       setIngredients(copiedIngredientsList);
     };
 
-  useEffect(() => {
-    document.getElementById(currentFocus.toString())?.focus();
-  }, [currentFocus]);
-
-  useEffect(() => {
-    // in case of create mode
-    if (mode === 'CREATE') {
-      document.getElementById('title')?.focus();
-    }
-  }, [mode]);
   return (
     <main css={noteStyle}>
       <header css={headerStyle}>
@@ -229,12 +216,15 @@ export default function Note({
           </IconButton>
           <Menu
             id="simple-menu"
+            data-test="menu-burger"
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
             <MenuItem onClick={handleMenuClose}>Favorite</MenuItem>
-            <MenuItem onClick={handleDelete}>Delete</MenuItem>
+            <MenuItem data-test="delete-btn" onClick={handleDelete}>
+              Delete
+            </MenuItem>
             <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
           </Menu>
           <Button
@@ -261,6 +251,7 @@ export default function Note({
           placeholder="Type here"
           fullWidth
           required
+          autoFocus
         />
       </div>
       <div css={commonInputStyle}>
