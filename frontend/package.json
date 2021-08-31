@@ -29,6 +29,7 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
+    "ci": "yarn install --frozen-lockfile",
     "start": "react-scripts -r @cypress/instrument-cra start",
     "build": "react-scripts build",
     "test": "react-scripts test",
