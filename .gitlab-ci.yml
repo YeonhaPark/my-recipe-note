@@ -34,9 +34,9 @@ test-job-cy:
   script:
     - echo "e2e testing the React..."
     - cd frontend
-    - npm ci
+    - yarn ci
     # start the server in the background
-    - npm run start:ci &
+    - yarn run start:ci &
     # run Cypress tests
     - npx cypress run --browser chrome
   only:
