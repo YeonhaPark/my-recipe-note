@@ -32,7 +32,8 @@ test-job-cy:
   image: cypress/browsers:node12.14.1-chrome85-ff81
   stage: test
   script:
-    # install dependencies
+    - echo "e2e testing the React..."
+    - cd frontend
     - npm ci
     # start the server in the background
     - npm run start:ci &
