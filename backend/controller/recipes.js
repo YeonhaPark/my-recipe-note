@@ -29,9 +29,11 @@ export async function getRecipe(req, res) {
 }
 
 export async function postRecipe(req, res) {
+  console.log('req?', req.userId);
+  const { userId } = req;
   const { title, ingredients, contents, tags } = req.body;
   const recipe = {
-    id: Date.now().toString(),
+    userId,
     title,
     ingredients,
     contents,

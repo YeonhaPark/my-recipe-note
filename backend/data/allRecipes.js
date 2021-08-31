@@ -1,18 +1,55 @@
 import { db } from '../db/database.js';
 
 export async function getAll(userId) {
-  console.log('userId:::', userId);
-  const userID = 1;
-  // 로그인한 유저의 레시피들만 가져오기.
-  // 로그인한 유저의 id 가져온다.
   return db
     .execute(
-      'SELECT r.*,i.*,t.* from recipe r JOIN recipeIngredient ri ON ri.recipeId=r.id JOIN ingredient i ON i.id=ri.ingredientId JOIN recipeTag rt ON rt.recipeId=r.id JOIN tag t ON t.id=rt.tagId JOIN user u on u.id=r.userId WHERE u.id=?',
-      [userID]
+      'SELECT recipe.id, recipe.contents, recipe.title FROM recipe WHERE recipe.userId=?',
+      [userId]
     )
     .then((result) => {
-      console.log(result[0]);
       return result[0];
+    })
+    .then((recipes) => {
+      return Promise.all(
+        recipes.map((recipe) =>
+          db
+            .execute(
+              'SELECT recipeIngredient.ingredientId FROM recipeIngredient WHERE recipeIngredient.recipeId=?',
+              [recipe.id]
+            )
+            .then((items) => items[0])
+            .then((ingredientIds) => {
+              if (ingredientIds.length) {
+                const ingredients = ingredientIds;
+                return Promise.all(
+                  ingredients.map((el) =>
+                    db
+                      .execute(
+                        'SELECT * FROM ingredient WHERE ingredient.id=?',
+                        [el.ingredientId]
+                      )
+                      .then((outerIngredient) => {
+                        return outerIngredient[0][0];
+                      })
+                  )
+                );
+              }
+            })
+            .then((result) => {
+              if (result) {
+                const newResult = result.map((el) => {
+                  el.isChecked = !!el.isChecked;
+                  return el;
+                });
+                recipe.ingredients = newResult;
+              }
+              return recipe;
+            })
+        )
+      );
+    })
+    .then((results) => {
+      return results;
     });
 }
 
@@ -35,13 +72,46 @@ export async function getByTitle(title) {
 }
 
 export async function create(recipe) {
-  const { title, contents, ingredients } = recipe;
-  return db.execute('INSERT INTO recipe (title, contents) VALUES(?,?)', [
-    title,
-    contents,
-  ]);
-  console.log(recipe);
-  allRecipes.unshift(recipe);
+  const { title, contents, ingredients, tags, userId } = recipe;
+  await db
+    .execute('INSERT INTO recipe (title, contents, userId) VALUES(?,?,?)', [
+      title,
+      contents,
+      userId,
+    ])
+    .then((result) => {
+      console.log('result::', result);
+      const recipeId = result[0].insertId;
+      ingredients.forEach((ingredient) => {
+        const { isChecked, name } = ingredient;
+        db.execute('INSERT INTO ingredient (isChecked, name) VALUES(?, ?)', [
+          isChecked,
+          name,
+        ]).then((result) => {
+          const ingredientId = result[0].insertId;
+          db.execute(
+            'INSERT INTO recipeIngredient (recipeId, ingredientId) VALUES(?,?)',
+            [recipeId, ingredientId]
+          );
+        });
+      });
+
+      tags.forEach((tag) => {
+        // ㅌㅐ그가 이미 있으면 패스
+        const { title } = tag;
+        db.execute('INSERT INTO tag (title) VALUES(?)', [title]).then(
+          (result) => {
+            const tagId = result[0].insertId;
+            db.execute('INSERT INTO recipeTag (tagId, recipeId) VALUES(?,?)', [
+              tagId,
+              recipeId,
+            ]);
+          }
+        );
+      });
+    });
+
+  // tags의 추가된 애들을 호출 (recipe Id로 필터걸어서) 그 다음에 recipeTag에 다시 인서트
 }
 
 export async function update(id, recipe) {
