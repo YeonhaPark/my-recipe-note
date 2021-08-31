@@ -20,7 +20,7 @@ export async function createUser(user) {
 }
 
 export async function findById(id) {
-  return db
-    .execute('SELECT * FROM user WHERE id=?', [id])
-    .then((result) => result[0][0]);
+  return db.execute('SELECT * FROM user WHERE id=?', [id]).then((result) => {
+    return result[0][0];
+  });
 }
