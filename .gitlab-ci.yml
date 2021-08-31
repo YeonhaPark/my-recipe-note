@@ -29,17 +29,17 @@ test-job: # This job runs in the build stage, which runs first.
     - pushes
 
 test-job-cy:
-  test:
-    image: node:latest
-    stage: test
-    script:
-      # install dependencies
-      - npm ci
-      # start the server in the background
-      - npm run start:ci &
-      # run Cypress tests
-      - npm run e2e
-    only:
-      - pushes
-    #tags:
-    #  - reactdocker
+  image: cypress/browsers:node12.14.1-chrome85-ff81
+  stage: test
+  script:
+    - echo "e2e testing the React..."
+    - cd frontend
+    - yarn
+    # start the server in the background
+    - yarn start:ci & npx wait-on http://localhost:3000
+    # run Cypress tests
+    - npx cypress run --browser chrome
+  only:
+    - pushes
+  #tags:
+  #  - reactdocker
