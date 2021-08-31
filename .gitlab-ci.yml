@@ -36,7 +36,7 @@ test-job-cy:
     - cd frontend
     - yarn
     # start the server in the background
-    - yarn run start:ci &
+    - yarn run start:ci & wait-on http://localhost:3000
     # run Cypress tests
     - npx cypress run --browser chrome
   only:
