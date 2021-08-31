@@ -1,7 +1,5 @@
 import { mount } from 'enzyme';
-import { Drawer } from '../organisms';
-import renderer from 'react-test-renderer';
-import { ChipColor } from '../atoms';
+import { Drawer } from '.';
 
 const DrawerProps = {
   onCreateNew: () => {},
@@ -34,5 +32,13 @@ describe('Drawer', () => {
     const drawer = renderDrawer();
     drawer.setProps({ drawerOpen: false });
     expect(drawer.prop('drawerOpen')).toEqual(false);
+  });
+
+  it('if recipeList length is 0, render null', () => {
+    const drawer = renderDrawer();
+    drawer.setProps({ recipeList: [] });
+    drawer.update();
+    const listItem = drawer.find("[data-test='list-item']");
+    expect(listItem).toHaveLength(0);
   });
 });

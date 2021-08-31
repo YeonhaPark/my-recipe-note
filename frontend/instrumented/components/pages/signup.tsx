@@ -6,38 +6,40 @@ import { Button } from '../atoms';
 import { Input } from '../molecules';
 import { AuthTemplate } from '../templates';
 
-export default function Login() {
+export default function Signup() {
   const history = useHistory();
+
   const idEl = useRef<HTMLInputElement>(null);
   const passwordEl = useRef<HTMLInputElement>(null);
+  const repasswordEl = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
       const username = idEl.current && idEl.current.value;
       const password = passwordEl.current && passwordEl.current.value;
-      console.log({ username, password });
-      if (!(username && password))
-        throw new Error('fill out username or password');
-      const { token } = await apiProvider.postAuth('login', {
+      const repassword = repasswordEl.current && repasswordEl.current.value;
+      console.log({ password, repassword });
+      if (password !== repassword) {
+        return alert("Passwords don't match");
+      }
+      const { token } = await apiProvider.postAuth('signup', {
         username,
         password,
       });
-      if (token) {
-        localStorage.setItem('token', token);
-      }
+      localStorage.setItem('token', token);
       alert('Welcome!');
-      history.push('/main');
+      history.push('/login');
     } catch (err) {
-      // console.error(err);
+      console.error(err);
     }
   };
+
   return (
-    <AuthTemplate headerName="Login">
-      <form id="loginForm" onSubmit={handleSubmit}>
+    <AuthTemplate headerName="Sign Up">
+      <form id="signupForm" onSubmit={handleSignup}>
         <section>
           <Input
-            data-test="username"
             myRef={idEl}
             type="text"
             labelName="ID"
@@ -45,13 +47,18 @@ export default function Login() {
             required
           />
           <Input
-            data-test="password"
             myRef={passwordEl}
             type="password"
             labelName="Password"
             placeholder="Password"
             required
-            autoComplete="off"
+          />
+          <Input
+            myRef={repasswordEl}
+            type="password"
+            labelName="Retype Password"
+            placeholder="Retype Password"
+            required
           />
         </section>
       </form>
@@ -59,16 +66,15 @@ export default function Login() {
       <section>
         <Button
           style={{ marginBottom: '0.5rem' }}
-          data-test="login-submit"
           variant="outlined"
           color="primary"
           fullWidth
           type="submit"
-          form="loginForm"
+          form="signupForm"
         >
-          Login
+          Signup
         </Button>
-        <Link to="/signup">
+        <Link to="/login">
           <Button
             style={{ marginBottom: '0.5rem' }}
             variant="contained"
@@ -76,7 +82,7 @@ export default function Login() {
             fullWidth
             type="button"
           >
-            JOIN
+            Back to Login
           </Button>
         </Link>
       </section>

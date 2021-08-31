@@ -1,6 +1,5 @@
 import { shallow } from 'enzyme';
 import { Checkbox } from '../atoms';
-import renderer from 'react-test-renderer';
 
 const checkboxProps = {
   id: 1,
@@ -13,8 +12,9 @@ const checkboxProps = {
 const renderCheckbox = () => shallow(<Checkbox {...checkboxProps} />);
 
 describe('Checkbox', () => {
-  it('renders Checkbox', () => {
-    renderCheckbox();
+  beforeEach(() => {
+    const button = renderCheckbox();
+    button.setProps({ checked: false });
   });
 
   it('check/unchecked when change event called', () => {
