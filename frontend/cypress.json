@@ -1,7 +1,4 @@
 {
   "baseUrl": "http://localhost:3000",
-  "component": {
-    "testFiles": "**/*.test.{js,ts,jsx,tsx}",
-    "componentFolder": "src"
-  }
+  "video": false
 }
