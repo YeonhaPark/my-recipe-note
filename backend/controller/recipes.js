@@ -1,4 +1,4 @@
-import * as recipeRepository from '../data/allRecipes.js';
+import * as recipeRepository from '../data/recipes.js';
 
 /**
  * 들어오는 데이터, 보내지는 데이터에 대한 백엔드 로직을 처리

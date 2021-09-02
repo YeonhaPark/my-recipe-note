@@ -46,11 +46,15 @@ export async function login(req, res) {
 }
 
 export async function isMe(req, res) {
-  const user = await userRepository.findById(req.userId);
-  if (!user) {
-    return res.status(404).json({ message: 'User not found' });
+  try {
+    const user = await userRepository.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res
+      .status(200)
+      .json({ token: req.token, username: user.username, userId: user.userId });
+  } catch (error) {
+    console.error(error);
   }
-  res
-    .status(200)
-    .json({ token: req.token, username: user.username, userId: user.userId });
 }
