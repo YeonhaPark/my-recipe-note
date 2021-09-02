@@ -1,26 +1,40 @@
-import { db } from '../db/database.js';
+import { sequelize } from '../db/database.js';
+import SQ from 'sequelize';
+
+const DataTypes = SQ.DataTypes;
+
+export const User = sequelize.define(
+  'user',
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      allowNull: false,
+      primaryKey: true,
+    },
+    username: {
+      type: DataTypes.STRING(128),
+      allowNull: false,
+    },
+    password: {
+      type: DataTypes.STRING(128),
+      allowNull: false,
+    },
+  },
+  { timestamps: false }
+);
 
 export async function findByUsername(username) {
-  return db
-    .execute('SELECT * FROM user WHERE username=?', [username])
-    .then((result) => {
-      return result[0][0];
-    });
+  return User.findOne({ where: { username } });
 }
 
 export async function createUser(user) {
-  return db
-    .execute('INSERT INTO user (username, password) VALUES (?,?)', [
-      user.username,
-      user.password,
-    ])
-    .then((result) => {
-      return result[0].insertId;
-    });
+  return User.create(user).then((data) => {
+    return data.dataValues.id;
+  });
 }
 
 export async function findById(id) {
-  return db.execute('SELECT * FROM user WHERE id=?', [id]).then((result) => {
-    return result[0][0];
-  });
+  console.log('id?', id);
+  return User.findByPk(id);
 }

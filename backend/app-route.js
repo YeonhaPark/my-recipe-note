@@ -7,7 +7,7 @@ import 'express-async-errors';
 import postRouter from './router/post.js';
 import authRouter from './router/auth.js';
 import { config } from './config.js';
-import { db } from './db/database.js';
+import { sequelize } from './db/database.js';
 
 const app = express();
 const corsOptions = {
@@ -47,6 +47,6 @@ app.use((err, req, res, next) => {
   res.sendStatus(500);
 });
 
-db.getConnection();
-
-app.listen(config.host.port);
+sequelize.sync().then(() => {
+  app.listen(config.host.port);
+});
