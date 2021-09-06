@@ -15,7 +15,7 @@ export const isAuth = async (req, res, next) => {
     if (error) {
       return res.status(401).json(AUTH_ERROR);
     }
-    const user = await userRepository.findById(decoded.id.id);
+    const user = await userRepository.findById(decoded.id);
     if (!user) return res.status(401).json(AUTH_ERROR);
     req.userId = user.id; // req.customData 등록가능
     next();
