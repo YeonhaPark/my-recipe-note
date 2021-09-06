@@ -5,7 +5,12 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useState, useEffect, ChangeEvent } from 'react';
 import { Drawer, Note } from '../organisms';
 import { apiProvider } from '../../api/providers';
-import { IngredientType, RecipesType } from '../../api/types';
+import {
+  IngredientType,
+  PostRecipeType,
+  GetRecipeType,
+  TagType,
+} from '../../api/types';
 
 const mainStyle = css`
   display: grid;

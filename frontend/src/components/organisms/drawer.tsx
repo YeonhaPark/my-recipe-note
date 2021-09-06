@@ -9,7 +9,7 @@ import {
   ListItemText,
   Input,
 } from '@material-ui/core';
-import { RecipesType } from '../../api/types';
+import { GetRecipeType } from '../../api/types';
 import { makeStyles } from '@material-ui/styles';
 import { NoteAdd, Search } from '@material-ui/icons';
 import { Chip, IconButton } from '../atoms';
@@ -60,10 +60,14 @@ const tagSectionStyle = css`
   border-bottom: 1px solid ${gray};
 `;
 
+const chipSectionStyle = css`
+  padding: 0 0.5rem;
+`;
+
 interface Props {
   drawerOpen: boolean;
   onCreateNew: () => void;
-  recipeList: RecipesType[];
+  recipeList: GetRecipeType[];
   onRecipeClick: (id: string) => void;
   searchWords: string;
   onSearch: (e: ChangeEvent<HTMLInputElement>) => void;

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { handleResponse, handleError } from './handlers';
-import { RecipesType } from './types';
+import { GetRecipeType, PostRecipeType } from './types';
 import { getAuthHeaders } from './auth';
 const BASE_URL = process.env.REACT_APP_SERVER_DEV;
 
@@ -18,7 +18,7 @@ const getAll = async (resource: string) => {
 const getSingle = async (
   resource: string,
   id: string,
-): Promise<RecipesType> => {
+): Promise<GetRecipeType> => {
   try {
     const response = await axios.get(`${BASE_URL}/${resource}/${id}`, {
       headers: getAuthHeaders(),
@@ -29,7 +29,7 @@ const getSingle = async (
   }
 };
 
-const post = async (resource: string, data: any) => {
+const post = async (resource: string, data: PostRecipeType) => {
   try {
     const response = await axios.post(`${BASE_URL}/${resource}`, data, {
       headers: getAuthHeaders(),

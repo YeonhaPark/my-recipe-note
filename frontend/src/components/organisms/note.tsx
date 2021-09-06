@@ -10,7 +10,7 @@ import { TextField, Input, Menu, MenuItem } from '@material-ui/core';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { makeStyles } from '@material-ui/styles';
 import { IconButton, Button } from '../atoms';
-import { IngredientType, Mode } from '../../api/types';
+import { GetRecipeType } from '../../api/types';
 import { Ingredient, Tags } from '../molecules';
 
 const useStyles = makeStyles({

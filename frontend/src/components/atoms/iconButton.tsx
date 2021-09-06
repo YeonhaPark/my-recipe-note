@@ -41,9 +41,10 @@ export default function CustomIconButton({
   onClick,
   children,
   color,
+  type,
 }: Props): JSX.Element {
   return (
-    <CustomIcon onClick={onClick} color={color}>
+    <CustomIcon type={type} onClick={onClick} color={color}>
       {children}
     </CustomIcon>
   );
