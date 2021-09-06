@@ -51,6 +51,7 @@ const sectionStyle = css`
   position: absolute;
   bottom: 0;
   padding-bottom: 2rem;
+  height: 240px;
 `;
 const tagSectionStyle = css`
   height: 2.5rem;
@@ -143,7 +144,7 @@ export default function Drawer({
       </List>
       <section css={sectionStyle}>
         <div css={tagSectionStyle}>Tags</div>
-        <div>
+        <div css={chipSectionStyle}>
           <Chip variant="filled" color="warning" label="korean" />
         </div>
       </section>

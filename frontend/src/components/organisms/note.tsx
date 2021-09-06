@@ -18,15 +18,19 @@ const useStyles = makeStyles({
     height: '3rem',
   },
 });
+const mainStyle = css`
+  padding: 0 1rem;
+`;
+const formStyle = css`
+  height: 100%;
 
-const noteStyle = css`
-  padding: 0 1rem 0.75rem;
   display: flex;
   flex-flow: column;
 `;
 
 const headerStyle = css`
   position: relative;
+  padding: 0.25rem 0;
   justify-content: space-between;
   display: flex;
   align-items: center;
