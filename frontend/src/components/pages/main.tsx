@@ -1,6 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useState, useEffect, ChangeEvent } from 'react';
 import { Drawer, Note } from '../organisms';
 import { apiProvider } from '../../api/providers';
@@ -17,13 +18,16 @@ const drawerClosed = css`
 `;
 
 export default function Main(): JSX.Element {
-  const [recipeList, setRecipeList] = useState<RecipesType[]>([]);
+  const methods = useForm({
+    defaultValues: {
+      title: '',
+      contents: '',
+      ingredients: [{ isChecked: false, name: '' }] as IngredientType[],
+    },
+  });
+
+  const [recipeList, setRecipeList] = useState<GetRecipeType[]>([]);
   const [recipeID, setRecipeID] = useState<string>('');
-  const [title, setTitle] = useState<string>('');
-  const [ingredients, setIngredients] = useState<IngredientType[]>([
-    { id: 1, isChecked: false, name: '' },
-  ]);
-  const [contents, setContents] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
   const [searchWords, setSearchWords] = useState<string>('');
   const [drawerOpen, setDrawerOpen] = useState<boolean>(true);
@@ -53,59 +57,28 @@ export default function Main(): JSX.Element {
     }
   };
 
-  const handleCreate = async () => {
-    try {
-      const data = {
-        title,
-        ingredients,
-        contents,
-        tags,
-      };
-
-      const result = await apiProvider.post('recipes', data);
-      await getAllPosts();
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const handleCreateNew = () => {
+    methods.reset();
     setRecipeID('');
-    setTitle('');
-    setIngredients([]);
-    setContents('');
     setTags([]);
   };
 
-  const handleUpdate = async () => {
+  const handleUpload = async (data: PostRecipeType) => {
     try {
-      const data = {
-        title,
-        ingredients,
-        contents,
-        tags,
-      };
-      const result = await apiProvider.put(`recipes/${recipeID}`, data);
-      await getAllPosts();
+      if (recipeID) {
+        await apiProvider.put(`recipes/${recipeID}`, data);
+      } else {
+        await apiProvider.post('recipes', data);
+        await getAllPosts();
+      }
     } catch (err) {
       console.error(err);
-    }
-  };
-
-  const handleUpload = () => {
-    if (recipeID) {
-      // upload
-      handleUpdate();
-    } else {
-      // create
-      handleCreate();
     }
   };
 
   const handleDelete = async () => {
     try {
-      const result = await apiProvider.remove('recipes', recipeID);
-      // delete 하고 나서 다시 모두 가져올것. getAll
+      await apiProvider.remove('recipes', recipeID);
       await getAllPosts();
     } catch (err) {
       console.error(err);
@@ -115,11 +88,13 @@ export default function Main(): JSX.Element {
   const handleRecipeClick = async (recipeId: string) => {
     try {
       const result = await apiProvider.getSingle('recipes', recipeId);
+      const { title, ingredients, contents } = result;
       setRecipeID(result.id);
-      setTitle(result.title);
-      setIngredients(result.ingredients);
-      setContents(result.contents);
-      setTags(result.tags);
+      methods.setValue('title', title);
+      methods.setValue('contents', contents);
+      methods.setValue('ingredients', ingredients);
+      const tagsList = result.tags.map((tag: TagType) => tag.title);
+      setTags(tagsList);
     } catch (err) {
       console.error(err);
     }
@@ -131,33 +106,28 @@ export default function Main(): JSX.Element {
   useEffect(() => {
     if (recipeList[0]) handleRecipeClick(recipeList[0].id);
   }, [recipeList]);
+
   return (
-    <div css={drawerOpen ? mainStyle : drawerClosed}>
-      <Drawer
-        drawerOpen={drawerOpen}
-        onCreateNew={handleCreateNew}
-        recipeList={recipeList}
-        onRecipeClick={handleRecipeClick}
-        searchWords={searchWords}
-        onSearch={handleSearch}
-        onSearchClick={handleSearchClick}
-      />
-      <Note
-        mode="CREATE"
-        drawerOpen={drawerOpen}
-        onExpandClick={handleDrawerOpen}
-        onUpload={handleUpload}
-        onDelete={handleDelete}
-        recipeID={recipeID}
-        title={title}
-        setTitle={setTitle}
-        ingredients={ingredients}
-        setIngredients={setIngredients}
-        contents={contents}
-        setContents={setContents}
-        tags={tags}
-        setTags={setTags}
-      />
-    </div>
+    <FormProvider {...methods}>
+      <div css={drawerOpen ? mainStyle : drawerClosed}>
+        <Drawer
+          drawerOpen={drawerOpen}
+          onCreateNew={handleCreateNew}
+          recipeList={recipeList}
+          onRecipeClick={handleRecipeClick}
+          searchWords={searchWords}
+          onSearch={handleSearch}
+          onSearchClick={handleSearchClick}
+        />
+        <Note
+          drawerOpen={drawerOpen}
+          onExpandClick={handleDrawerOpen}
+          onUpload={handleUpload}
+          onDelete={handleDelete}
+          tags={tags}
+          setTags={setTags}
+        />
+      </div>
+    </FormProvider>
   );
 }

@@ -103,6 +103,7 @@ export default function Drawer({
               onClick={onCreateNew}
               color="inherit"
               aria-label="create new recipe"
+              type="reset"
             >
               <NoteAdd />
             </IconButton>

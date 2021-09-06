@@ -18,6 +18,7 @@ interface Props {
     | 'basic'
     | undefined;
   children: ReactNode;
+  type?: string;
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
 }
 
