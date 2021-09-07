@@ -15,22 +15,41 @@ export type ChipColor = OverridableStringUnion<
   ChipPropsColorOverrides
 >;
 export interface ChipType {
+  isActive?: boolean;
   label: string;
   color: ChipColor;
   variant?: 'outlined' | 'filled' | undefined;
+  onClick?: () => void;
 }
+
 export default function CustomChip({
+  isActive = false,
   label,
   color,
   variant = 'filled',
+  onClick,
 }: ChipType): JSX.Element {
+  const defaultStyle = 'margin-right: 0.25rem;';
+  const activeStyle = '> div.selected {border: 1px solid black;}';
   return (
     <span
-      css={css`
-        margin-right: 0.25rem;
-      `}
+      css={
+        isActive
+          ? css`
+              ${defaultStyle} ${activeStyle}
+            `
+          : css`
+              ${defaultStyle}
+            `
+      }
     >
-      <Chip label={label || ''} color={color} variant={variant} />
+      <Chip
+        className="selected"
+        onClick={onClick}
+        label={label || ''}
+        color={color}
+        variant={variant}
+      />
     </span>
   );
 }

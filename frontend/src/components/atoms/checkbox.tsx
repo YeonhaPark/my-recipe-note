@@ -1,5 +1,6 @@
 import { withStyles } from '@material-ui/styles';
 import { Checkbox as MCheckbox } from '@material-ui/core';
+import { useFormContext } from 'react-hook-form';
 
 const CustomCheckbox = withStyles({
   root: {
@@ -9,28 +10,16 @@ const CustomCheckbox = withStyles({
 })(MCheckbox);
 
 interface Props {
-  id: number;
-  checked: boolean | undefined;
-  onCheckboxChange: (
-    id: number,
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => void;
-  name: string;
   color: 'primary' | 'secondary';
+  idx: number;
 }
 
-export default function Checkbox({
-  id,
-  checked,
-  onCheckboxChange,
-  name,
-  color,
-}: Props) {
+export default function Checkbox({ color, idx }: Props): JSX.Element {
+  const { register } = useFormContext();
+
   return (
     <CustomCheckbox
-      checked={checked}
-      onChange={(e) => onCheckboxChange(id, e)}
-      name={name}
+      {...register(`ingredients.${idx}.isChecked`)}
       color={color}
     />
   );

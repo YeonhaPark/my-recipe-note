@@ -33,6 +33,7 @@ const headerStyle = css`
   color: ${black};
 `;
 const horizontallyCentered = css`
+  width: 100%;
   display: flex;
   justify-content: center;
   margin-top: 10rem;

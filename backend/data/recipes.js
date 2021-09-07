@@ -47,6 +47,7 @@ const Tag = sequelize.define('tag', {
   },
   title: {
     type: DataTypes.TEXT,
+    unique: true,
   },
 });
 
@@ -69,6 +70,32 @@ const INCLUDE = {
   ],
 };
 const ORDER = { order: [['createdAt', 'DESC']] };
+
+export async function getAllTags(userId, title) {
+  if (title) {
+    return Tag.findAll({
+      attributes: ['id', 'title'],
+      include: {
+        attributes: [],
+        model: Recipe,
+        where: {
+          userId,
+          title: { [Op.like]: `%${title}%` },
+        },
+      },
+    });
+  } else {
+    return Tag.findAll({
+      attributes: ['id', 'title'],
+      include: {
+        attributes: [],
+        model: Recipe,
+        where: { userId },
+      },
+    });
+  }
+}
+
 export async function getAll(userId) {
   return Recipe.findAll({
     ...ATTR,
@@ -82,14 +109,40 @@ export async function getById(id) {
   return Recipe.findOne({ ...ATTR, ...INCLUDE, where: { id } });
 }
 
-export async function getByTitle(title) {
-  return Recipe.findAll({
-    where: {
-      title: {
-        [Op.like]: `%${title}%`,
+export async function getByTitle({ userId, title, tag }) {
+  if (title && tag) {
+    return Recipe.findAll({
+      where: {
+        userId,
+        title: {
+          [Op.like]: `%${title}%`,
+        },
       },
-    },
-  });
+      include: {
+        model: Tag,
+        where: { title: tag },
+      },
+    });
+  } else if (title) {
+    return Recipe.findAll({
+      where: {
+        userId,
+        title: {
+          [Op.like]: `%${title}%`,
+        },
+      },
+    });
+  } else if (tag) {
+    return Recipe.findAll({
+      where: {
+        userId,
+      },
+      include: {
+        model: Tag,
+        where: { title: tag },
+      },
+    });
+  }
 }
 
 export async function create(recipe) {
@@ -104,7 +157,29 @@ export async function create(recipe) {
 }
 
 export async function update(id, recipe) {
-  return Recipe.update(recipe, { where: { id } });
+  const { title, contents, ingredients, tags } = recipe;
+  const ingredientsss = await Ingredient.bulkCreate(ingredients, {
+    updateOnDuplicate: ['name', 'isChecked'],
+    through: 'RecipeIngredient',
+    include: { model: Recipe, where: { id } },
+  });
+  const tagsss = await Tag.bulkCreate(tags, {
+    updateOnDuplicate: ['title', 'updatedAt'],
+    through: 'RecipeTag',
+    include: { model: Recipe, where: { id } },
+  }); // 기존에 있으면 생성하지 말것.
+  console.log('sss::', tagsss);
+
+  const updatedRecipe = await Recipe.findOne({
+    ...ATTR,
+    ...INCLUDE,
+    where: { id },
+  });
+
+  await updatedRecipe.addIngredients(ingredientsss);
+  await updatedRecipe.addTags(tagsss);
+
+  return Recipe.update({ title, contents }, { where: { id } });
 }
 
 export async function remove(id) {

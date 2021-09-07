@@ -35,6 +35,5 @@ export async function createUser(user) {
 }
 
 export async function findById(id) {
-  console.log('id?', id);
   return User.findByPk(id);
 }
