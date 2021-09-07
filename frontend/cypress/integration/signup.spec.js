@@ -39,22 +39,4 @@ describe('renders the signup page', () => {
   //     expect(result.status).to.eq(200);
   //   });
   // });
-
-  it('after signing up, move to login page', () => {
-    const username = 'yeoni5@gmail.com';
-    const password = 'yeoniyeoni5';
-
-    cy.get('form input#ID')
-      .clear()
-      .type(username)
-      .get('form input#Password')
-      .clear()
-      .type(password)
-      .get('form input[id="Retype Password"]')
-      .clear()
-      .type(password)
-      .get('button[type=submit]')
-      .click();
-    cy.url().should('include', '/login');
-  });
 });

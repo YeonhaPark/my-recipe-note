@@ -12,16 +12,4 @@ describe('renders the login page', () => {
   it('renders correctly', () => {
     cy.get('#loginForm').should('exist');
   });
-
-  it('logs in', () => {
-    cy.get('form input#ID')
-      .clear()
-      .type('yeoni@gmail.com')
-      .get('form input#Password')
-      .clear()
-      .type('yeoniyeoni2')
-      .get('button[type=submit]')
-      .click();
-    cy.url().should('include', '/main');
-  });
 });
