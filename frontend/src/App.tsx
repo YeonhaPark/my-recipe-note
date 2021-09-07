@@ -5,8 +5,6 @@ import PrivateRoute from './components/auth/privateRoute';
 import 'normalize.css';
 import theme from './theme';
 
-const token = localStorage.getItem('token');
-console.log({ token });
 function App() {
   return (
     <ThemeProvider theme={theme}>

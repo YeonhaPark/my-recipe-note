@@ -5,6 +5,7 @@ import { Chip, ChipColor } from '../atoms';
 import { Autocomplete, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { useState, useEffect } from 'react';
+import { chipColors } from '../../api/types';
 
 const tagStyle = css`
   font-size: 0.75rem;
@@ -20,15 +21,7 @@ interface Props {
   tags: string[];
   setTags: React.Dispatch<React.SetStateAction<string[]>>;
 }
-const colors = [
-  'primary',
-  'secondary',
-  'success',
-  'warning',
-  'default',
-  'error',
-  'info',
-] as unknown as ChipColor;
+
 export default function Tags({ tags, setTags }: Props) {
   const classes = useStyles();
 
@@ -64,7 +57,7 @@ export default function Tags({ tags, setTags }: Props) {
             <Chip
               {...getTagProps({ index })}
               key={label}
-              color={colors[index] as ChipColor}
+              color={chipColors[index] as ChipColor}
               variant="filled"
               label={label}
             />

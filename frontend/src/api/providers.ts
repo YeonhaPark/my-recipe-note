@@ -1,23 +1,55 @@
 import axios from 'axios';
 import { handleResponse, handleError } from './handlers';
-import { GetRecipeType, PostRecipeType } from './types';
+import {
+  GetRecipeType,
+  PostRecipeType,
+  GetRecipeParams,
+  GetRecipeResult,
+} from './types';
 import { getAuthHeaders } from './auth';
 const BASE_URL = process.env.REACT_APP_SERVER_DEV;
 
-const getAll = async (resource: string) => {
+const getAuth = async () => {
   try {
-    const data = await axios.get(`${BASE_URL}/${resource}`, {
+    const data = await axios.get(`${BASE_URL}/auth/me`, {
       headers: getAuthHeaders(),
     });
     return handleResponse(data);
   } catch (err) {
-    return handleError(err);
+    return handleError(err.response);
+  }
+};
+
+const getAll = async (
+  resource: string,
+  params?: GetRecipeParams,
+): Promise<GetRecipeResult[]> => {
+  try {
+    const data = await axios.get(`${BASE_URL}/${resource}`, {
+      headers: getAuthHeaders(),
+      params,
+    });
+    console.log('dat?', data);
+    return handleResponse(data);
+  } catch (err) {
+    return handleError(err.response);
+  }
+};
+const getTags = async (resource: string, params?: any) => {
+  try {
+    const data = await axios.get(`${BASE_URL}/${resource}`, {
+      headers: getAuthHeaders(),
+      params,
+    });
+    return handleResponse(data);
+  } catch (err) {
+    return handleError(err.response);
   }
 };
 
 const getSingle = async (
   resource: string,
-  id: string,
+  id: number,
 ): Promise<GetRecipeType> => {
   try {
     const response = await axios.get(`${BASE_URL}/${resource}/${id}`, {
@@ -25,7 +57,7 @@ const getSingle = async (
     });
     return handleResponse(response);
   } catch (err) {
-    return handleError(err);
+    return handleError(err.response);
   }
 };
 
@@ -36,7 +68,7 @@ const post = async (resource: string, data: PostRecipeType) => {
     });
     return handleResponse(response);
   } catch (err) {
-    return handleError(err);
+    return handleError(err.response);
   }
 };
 
@@ -47,7 +79,7 @@ const postAuth = async (resource: string, model: any) => {
     });
     return handleResponse(response);
   } catch (err) {
-    return handleError(err);
+    return handleError(err.response);
   }
 };
 
@@ -58,7 +90,7 @@ const put = async (resource: string, recipe: any) => {
     });
     return handleResponse(data);
   } catch (err) {
-    return handleError(err);
+    return handleError(err.response);
   }
 };
 
@@ -69,12 +101,14 @@ const remove = async (resource: string, id: string) => {
     });
     return handleResponse(data);
   } catch (err) {
-    return handleError(err);
+    return handleError(err.response);
   }
 };
 
 export const apiProvider = {
+  getAuth,
   getAll,
+  getTags,
   getSingle,
   post,
   postAuth,

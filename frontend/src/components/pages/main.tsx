@@ -1,16 +1,19 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
+import { useHistory } from 'react-router';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect, ChangeEvent, useCallback } from 'react';
 import { Drawer, Note } from '../organisms';
 import { apiProvider } from '../../api/providers';
 import {
   IngredientType,
   PostRecipeType,
-  GetRecipeType,
+  GetRecipeResult,
   TagType,
+  GetTagResult,
 } from '../../api/types';
+import { removeEmptyVals } from '../../util/func';
 
 const mainStyle = css`
   display: grid;
@@ -31,36 +34,47 @@ export default function Main(): JSX.Element {
     },
   });
 
-  const [recipeList, setRecipeList] = useState<GetRecipeType[]>([]);
+  const history = useHistory();
+  const [recipeList, setRecipeList] = useState<GetRecipeResult[]>([]);
   const [recipeID, setRecipeID] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
+  const [userTags, setUserTags] = useState<GetTagResult[]>([]);
   const [searchWords, setSearchWords] = useState<string>('');
+  const [searchTag, setSearchTag] = useState<string>('');
   const [drawerOpen, setDrawerOpen] = useState<boolean>(true);
 
-  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchWords(e.target.value);
   };
 
   const handleDrawerOpen = () => {
     setDrawerOpen((prev) => !prev);
   };
-  const handleSearchClick = async () => {
-    await getAllPosts(searchWords);
-  };
 
-  const getAllPosts = async (title?: string) => {
+  const getAllTags = useCallback(async () => {
     try {
-      if (title) {
-        const result = await apiProvider.getAll(`recipes?title=${title}`);
-        setRecipeList(result);
-      } else {
-        const result = await apiProvider.getAll('recipes');
-        setRecipeList(result);
-      }
+      const query = removeEmptyVals({ title: searchWords });
+      const tags = await apiProvider.getTags('tags', query);
+      setUserTags(tags);
     } catch (err) {
-      console.error(err);
+      if (err.status === 401) history.push('/login');
     }
-  };
+  }, [searchWords]);
+
+  // search condition이 업데이트 되는 조건: 유저가 서치 버튼을 눌렀을때, 태그 클릭했을 때
+  const getAllPosts = useCallback(async () => {
+    try {
+      const searchConditions = {
+        title: searchWords,
+        tag: searchTag,
+      };
+      const refinedConditions = removeEmptyVals(searchConditions);
+      const result = await apiProvider.getAll('recipes', refinedConditions);
+      setRecipeList(result);
+    } catch (err) {
+      if (err.status === 401) history.push('/login');
+    }
+  }, [searchTag, searchWords]);
 
   const handleCreateNew = () => {
     methods.reset();
@@ -75,6 +89,7 @@ export default function Main(): JSX.Element {
       } else {
         await apiProvider.post('recipes', data);
         await getAllPosts();
+        await getAllTags();
       }
     } catch (err) {
       console.error(err);
@@ -85,44 +100,52 @@ export default function Main(): JSX.Element {
     try {
       await apiProvider.remove('recipes', recipeID);
       await getAllPosts();
+      await getAllTags();
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleRecipeClick = async (recipeId: string) => {
-    try {
-      const result = await apiProvider.getSingle('recipes', recipeId);
-      const { title, ingredients, contents } = result;
-      setRecipeID(result.id);
-      methods.setValue('title', title);
-      methods.setValue('contents', contents);
-      methods.setValue('ingredients', ingredients);
-      const tagsList = result.tags.map((tag: TagType) => tag.title);
-      setTags(tagsList);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const handleRecipeClick = useCallback(
+    async (recipeId: number) => {
+      try {
+        const result = await apiProvider.getSingle('recipes', recipeId);
+        const { title, ingredients, contents } = result;
+        setRecipeID(result.id);
+        methods.setValue('title', title);
+        methods.setValue('contents', contents);
+        methods.setValue('ingredients', ingredients);
+        const tagsList = result.tags.map((tag: TagType) => tag.title);
+        setTags(tagsList);
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    [methods],
+  );
+
   useEffect(() => {
     getAllPosts();
-  }, []);
+    getAllTags();
+  }, [searchTag, getAllPosts, getAllTags]);
 
   useEffect(() => {
-    if (recipeList[0]) handleRecipeClick(recipeList[0].id);
-  }, [recipeList]);
+    if (recipeList && recipeList[0]) handleRecipeClick(recipeList[0].id);
+  }, [handleRecipeClick, recipeList]);
 
   return (
     <FormProvider {...methods}>
       <div css={drawerOpen ? mainStyle : drawerClosed}>
         <Drawer
+          setSearchTag={setSearchTag}
+          searchTag={searchTag}
           drawerOpen={drawerOpen}
           onCreateNew={handleCreateNew}
           recipeList={recipeList}
           onRecipeClick={handleRecipeClick}
           searchWords={searchWords}
-          onSearch={handleSearch}
-          onSearchClick={handleSearchClick}
+          onChange={handleChange}
+          userTags={userTags}
         />
         <Note
           drawerOpen={drawerOpen}

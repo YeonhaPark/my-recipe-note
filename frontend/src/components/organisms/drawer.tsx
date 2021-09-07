@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
-import { ChangeEvent } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import {
   Drawer as MDrawer,
   List,
@@ -9,10 +9,10 @@ import {
   ListItemText,
   Input,
 } from '@material-ui/core';
-import { GetRecipeType } from '../../api/types';
+import { GetRecipeResult, GetTagResult, chipColors } from '../../api/types';
 import { makeStyles } from '@material-ui/styles';
-import { NoteAdd, Search } from '@material-ui/icons';
-import { Chip, IconButton } from '../atoms';
+import { NoteAdd, Search, NavigateBefore } from '@material-ui/icons';
+import { Chip, ChipColor, IconButton } from '../atoms';
 import { gray } from '../../theme/colors';
 
 const useStyles = makeStyles({
@@ -68,11 +68,13 @@ const chipSectionStyle = css`
 interface Props {
   drawerOpen: boolean;
   onCreateNew: () => void;
-  recipeList: GetRecipeType[];
-  onRecipeClick: (id: string) => void;
+  recipeList: GetRecipeResult[];
+  onRecipeClick: (id: number) => void;
   searchWords: string;
-  onSearch: (e: ChangeEvent<HTMLInputElement>) => void;
-  onSearchClick: () => void;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  setSearchTag: React.Dispatch<React.SetStateAction<string>>;
+  searchTag: string;
+  userTags: GetTagResult[];
 }
 
 export default function Drawer({
@@ -81,10 +83,19 @@ export default function Drawer({
   recipeList,
   onRecipeClick,
   searchWords,
-  onSearch,
-  onSearchClick,
+  onChange,
+  setSearchTag,
+  searchTag,
+  userTags,
 }: Props) {
   const searchStyle = useStyles();
+
+  const [isChipActive, setIsChipActive] = useState<boolean>(false);
+
+  const handleChipClick = (label: string) => {
+    setSearchTag(label);
+    setIsChipActive((prev) => !prev);
+  };
 
   return (
     <MDrawer
@@ -121,15 +132,13 @@ export default function Drawer({
           type="text"
           placeholder="Search..."
           value={searchWords}
-          onChange={onSearch}
+          onChange={onChange}
           fullWidth
         />
-        <IconButton onClick={onSearchClick}>
-          <Search />
-        </IconButton>
+        <Search />
       </div>
       <List>
-        {recipeList.length
+        {recipeList && recipeList.length
           ? recipeList.map((recipe) => (
               <ListItem
                 data-test="list-item"
@@ -145,7 +154,30 @@ export default function Drawer({
       <section css={sectionStyle}>
         <div css={tagSectionStyle}>Tags</div>
         <div css={chipSectionStyle}>
-          <Chip variant="filled" color="warning" label="korean" />
+          {isChipActive && (
+            <IconButton
+              onClick={() => {
+                setIsChipActive((prev) => !prev);
+                setSearchTag('');
+              }}
+            >
+              <NavigateBefore />
+            </IconButton>
+          )}
+          {searchTag ? (
+            <Chip isActive variant="filled" color="warning" label={searchTag} />
+          ) : userTags.length ? (
+            userTags.map((tag, idx) => (
+              <Chip
+                key={tag.id}
+                isActive={isChipActive}
+                onClick={() => handleChipClick(tag.title)}
+                variant="filled"
+                color={chipColors[idx] as ChipColor}
+                label={tag.title}
+              />
+            ))
+          ) : null}
         </div>
       </section>
     </MDrawer>
