@@ -12,9 +12,8 @@ import { sequelize } from './db/database.js';
 
 const app = express();
 const corsOptions = {
-  origin: ['http://localhost:3000'],
+  origin: config.cors.allowedOrigin,
   optionsSuccessStatus: 200,
-  credentials: true,
 };
 // 미들웨어 등록
 app.use(express.json());
@@ -50,5 +49,6 @@ app.use((err, req, res, next) => {
 });
 
 sequelize.sync().then(() => {
-  app.listen(config.host.port);
+  console.log(`Server started...${new Date()}`);
+  app.listen(config.port);
 });
