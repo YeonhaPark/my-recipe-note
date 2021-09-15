@@ -1,19 +1,30 @@
 import express from 'express';
+import { body } from 'express-validator';
+import 'express-async-errors';
+import { isAuth } from '../middleware/auth.js';
+import * as recipeController from '../controller/recipes.js';
+import { validate } from '../middleware/validate.js';
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  res.status(201).send('GET: /posts');
-});
-router.post('/', (req, res) => {
-  res.status(201).send('POST: /posts');
-});
+const validateRecipe = [
+  body('title')
+    .trim()
+    .notEmpty()
+    .withMessage('Title is required')
+    .isLength({ max: 50 })
+    .withMessage('Title length cannot exceed 50 letters'),
+  body('contents').notEmpty().withMessage('Content is required'),
+  validate,
+];
+router.get('/', isAuth, recipeController.getRecipes);
 
-router.put('/:id', (req, res) => {
-  res.status(201).send('PUT: /posts/:id');
-});
-router.delete('/:id', (req, res) => {
-  res.status(201).send('DELETE: /posts/:id');
-});
+router.get('/:id', isAuth, recipeController.getRecipe);
+
+router.post('/', isAuth, validateRecipe, recipeController.postRecipe);
+
+router.put('/:id', isAuth, validateRecipe, recipeController.updateRecipe);
+
+router.delete('/:id', isAuth, recipeController.deleteRecipe);
 
 export default router;

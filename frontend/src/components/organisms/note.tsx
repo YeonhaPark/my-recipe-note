@@ -1,29 +1,36 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
-import { useState, useEffect, KeyboardEvent, ChangeEvent } from 'react';
+import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import { useFormContext, useFieldArray } from 'react-hook-form';
+import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExpandAlt } from '@fortawesome/free-solid-svg-icons';
-import { TextField, Input } from '@material-ui/core';
+import { faCompressAlt, faExpandAlt } from '@fortawesome/free-solid-svg-icons';
+import { TextField, Input, Menu, MenuItem } from '@material-ui/core';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { makeStyles } from '@material-ui/styles';
-import { Button, ChipType } from '../atoms';
-import { Ingredient, Tags, IngredientType } from '../molecules';
+import { IconButton, Button } from '../atoms';
+import { GetRecipeType } from '../../api/types';
+import { Ingredient, Tags } from '../molecules';
 
 const useStyles = makeStyles({
   root: {
     height: '3rem',
   },
 });
+const mainStyle = css`
+  padding: 0 1rem;
+`;
+const formStyle = css`
+  height: 100%;
 
-const noteStyle = css`
-  padding: 0 1rem 0.75rem;
   display: flex;
   flex-flow: column;
 `;
 
 const headerStyle = css`
   position: relative;
-  padding: 0 0.75rem;
+  padding: 0.25rem 0;
   justify-content: space-between;
   display: flex;
   align-items: center;
@@ -61,156 +68,170 @@ const contentTextFieldStyle = css`
   }
 `;
 
-export default function Note(): JSX.Element {
+interface Props {
+  drawerOpen: boolean;
+  onExpandClick: () => void;
+  onUpload: (data: GetRecipeType) => void;
+  onDelete: () => void;
+  tags: string[];
+  setTags: Dispatch<SetStateAction<string[]>>;
+}
+
+// UPLOAD or CREATE
+export default function Note({
+  drawerOpen,
+  onExpandClick,
+  onUpload,
+  onDelete,
+  tags,
+  setTags,
+}: Props): JSX.Element {
+  const { register, handleSubmit } = useFormContext();
+  const {
+    fields: ingredientFields,
+    append,
+    remove,
+  } = useFieldArray({
+    name: 'ingredients',
+  });
+  const history = useHistory();
   const titleStyle = useStyles();
 
-  const [title, setTitle] = useState<string>('');
-  const [ingredientsList, setIngredientsList] = useState<IngredientType[]>([
-    { id: 1, isChecked: false, name: 'beer' },
-    { id: 2, isChecked: true, name: 'carrot' },
-  ]);
-  const [currentFocus, setCurrentFocus] = useState(0);
-  const [contents, setContents] = useState<string>('');
-  const [tag, setTag] = useState<string>('');
-  const [tagList, setTagList] = useState<ChipType[]>([]);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleIngredientsList = (
-    ingredientId: number,
-    e: KeyboardEvent<HTMLInputElement>,
-  ) => {
-    const { key, currentTarget } = e;
-    switch (key) {
-      case 'Enter':
-        if (currentTarget.value === '') break;
-        let newIngredientsList;
-        const elemIdx = ingredientsList.indexOf(
-          ingredientsList[ingredientId - 1],
-        );
-        console.log('elem idx:', elemIdx);
-        if (elemIdx !== -1) {
-          const newElem = {
-            id: elemIdx + 2,
-            isChecked: false,
-            name: '',
-          } as IngredientType;
-          newIngredientsList = ingredientsList
-            .slice(0, elemIdx + 1)
-            .concat([newElem])
-            .concat(
-              ingredientsList.slice(elemIdx + 1).map((ingredient) => {
-                return { ...ingredient, id: ingredient.id + 1 };
-              }),
-            );
-        } else {
-          newIngredientsList = [
-            ...ingredientsList,
-            {
-              id: ingredientId + 1,
-              isChecked: false,
-              name: '',
-            },
-          ];
-        }
-        setIngredientsList(newIngredientsList);
-
-        setCurrentFocus(ingredientId + 1);
-        setIngredientsList(newIngredientsList);
-        break;
-      case 'Backspace':
-        if (currentTarget.value === '') {
-          const filteredIngredientsList = ingredientsList.filter(
-            (ingredient) => ingredient.id !== ingredientId,
-          );
-          setCurrentFocus(ingredientId - 1);
-          setIngredientsList(filteredIngredientsList);
-        }
-        break;
-      default:
-        break;
-    }
+  const handleBurgerClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const handleValueChange =
-    (type: string) =>
-    (ingredientId: number, { target }: ChangeEvent<HTMLInputElement>) => {
-      const copiedIngredientsList = [...ingredientsList];
+  const handleDelete = () => {
+    handleMenuClose();
+    onDelete();
+  };
 
-      switch (type) {
-        case 'text':
-          copiedIngredientsList[ingredientId - 1].name = target.value;
-          break;
-        case 'checkbox':
-          copiedIngredientsList[ingredientId - 1].isChecked = target.checked;
-          break;
-        default:
-          break;
-      }
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
-      setIngredientsList(copiedIngredientsList);
-    };
+  const handleLogOut = () => {
+    localStorage.removeItem('token');
+    history.push('/login');
+  };
+
+  const onSubmit = (data: any) => {
+    const titledTags = tags.map((tag) => {
+      return { title: tag };
+    });
+    const dataToSend = { ...data, tags: titledTags };
+    onUpload(dataToSend);
+  };
 
   useEffect(() => {
-    document.getElementById(currentFocus.toString())?.focus();
-  }, [currentFocus]);
+    function detectEnter(e: any) {
+      if (e.key === 'Enter') {
+        return;
+      }
+    }
+    window.addEventListener('keydown', detectEnter);
+    return () => {
+      window.removeEventListener('keydown', detectEnter);
+    };
+  }, []);
 
   return (
-    <main css={noteStyle}>
-      <header css={headerStyle}>
-        <FontAwesomeIcon icon={faExpandAlt} />
-        <Button color="secondary" variant="contained">
-          Upload
-        </Button>
-      </header>
-      <div css={commonInputStyle}>
-        <div css={commonTitleStyle}>
-          <span>Recipe title</span>
-        </div>
-        <Input
-          classes={titleStyle}
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          type="text"
-          placeholder="Type here"
-          fullWidth
-        />
-      </div>
-      <div css={commonInputStyle}>
-        <div css={commonTitleStyle}>
-          <span>Ingredients</span>
-        </div>
-        {ingredientsList.map((ingredient) => (
-          <Ingredient
-            data-testid={`ingredient-${ingredient.id}`}
-            key={ingredient.id}
-            checked={ingredient.isChecked}
-            value={ingredient.name}
-            onListChange={handleIngredientsList}
-            onValueChange={handleValueChange('text')}
-            onCheckboxChange={handleValueChange('checkbox')}
-            ingredientId={ingredient.id}
-          />
-        ))}
-      </div>
-      <div css={contentStyle}>
-        <div css={commonTitleStyle}>
-          <span>Contents</span>
-        </div>
-        <div css={contentTextFieldStyle}>
-          <TextField
-            id="content"
-            value={contents}
-            onChange={(e) => setContents(e.target.value)}
-            multiline
+    <main css={mainStyle}>
+      <form css={formStyle} onSubmit={handleSubmit(onSubmit)}>
+        <header css={headerStyle}>
+          <IconButton color="basic" onClick={onExpandClick}>
+            {drawerOpen ? (
+              <FontAwesomeIcon data-test="fa-expand" icon={faExpandAlt} />
+            ) : (
+              <FontAwesomeIcon data-test="fa-compress" icon={faCompressAlt} />
+            )}
+          </IconButton>
+          <div
+            css={css`
+              display: flex;
+              align-items: center;
+            `}
+          >
+            <IconButton
+              data-test="simple-menu"
+              aria-controls="simple-menu"
+              aria-haspopup="true"
+              onClick={handleBurgerClick}
+            >
+              <MoreHorizIcon />
+            </IconButton>
+            <Menu
+              id="simple-menu"
+              data-test="menu-burger"
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+            >
+              <MenuItem data-test="delete-btn" onClick={handleDelete}>
+                Delete
+              </MenuItem>
+              <MenuItem onClick={handleLogOut}>Logout</MenuItem>
+            </Menu>
+            <Button
+              data-test="upload-btn"
+              style={{ marginLeft: '0.5rem' }}
+              color="secondary"
+              variant="contained"
+              type="submit"
+            >
+              Upload
+            </Button>
+          </div>
+        </header>
+        <div css={commonInputStyle}>
+          <div css={commonTitleStyle}>
+            <span>Recipe title</span>
+          </div>
+          <Input
+            {...register('title')}
+            data-test="title"
+            classes={titleStyle}
+            type="text"
+            placeholder="Type here"
             fullWidth
+            required
+            autoFocus
           />
         </div>
-        <Tags
-          setTag={setTag}
-          tag={tag}
-          tagList={tagList}
-          setTagList={setTagList}
-        />
-      </div>
+        <div css={commonInputStyle}>
+          <div css={commonTitleStyle}>
+            <span>Ingredients</span>
+          </div>
+          {ingredientFields.map((ingredient, idx) => {
+            return (
+              <Ingredient
+                idx={idx}
+                data-test="ingredients"
+                key={ingredient.id}
+                onAdd={() => append({ isChecked: false, name: '' })}
+                onRemove={() => remove(idx)}
+              />
+            );
+          })}
+        </div>
+        <div css={contentStyle}>
+          <div css={commonTitleStyle}>
+            <span>Contents</span>
+          </div>
+          <div data-test="contents" css={contentTextFieldStyle}>
+            <TextField
+              {...register('contents')}
+              id="content"
+              multiline
+              fullWidth
+              required
+            />
+          </div>
+          <Tags tags={tags} setTags={setTags} />
+        </div>
+      </form>
     </main>
   );
 }

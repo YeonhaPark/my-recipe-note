@@ -1,10 +1,11 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
-import { Chip, ChipType, ChipColor } from '../atoms';
+import { Chip, ChipColor } from '../atoms';
 import { Autocomplete, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import React from 'react';
+import { useState, useEffect } from 'react';
+import { chipColors } from '../../api/types';
 
 const tagStyle = css`
   font-size: 0.75rem;
@@ -17,41 +18,30 @@ const useStyles = makeStyles({
 });
 
 interface Props {
-  setTag: React.Dispatch<React.SetStateAction<string>>;
-  tag: string;
-  tagList: ChipType[];
-  setTagList: React.Dispatch<React.SetStateAction<ChipType[]>>;
+  tags: string[];
+  setTags: React.Dispatch<React.SetStateAction<string[]>>;
 }
-const colors = [
-  'primary',
-  'secondary',
-  'success',
-  'warning',
-  'default',
-  'error',
-  'info',
-] as unknown as ChipColor;
-export default function Tags({ setTag, tag, tagList, setTagList }: Props) {
+
+export default function Tags({ tags, setTags }: Props) {
   const classes = useStyles();
 
-  const addTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      const target = e.target as HTMLInputElement;
-      const labelChipArr = tagList.map((tag) => tag.label);
-      if (!labelChipArr.includes(target.value)) {
-        const randomColorIdx = Math.floor(Math.random() * colors.length);
-        const randomColor: ChipColor = colors[randomColorIdx] as ChipColor;
-        setTagList([...tagList, { label: target.value, color: randomColor }]);
-      } else {
-      }
+  const [currentTagValue, setCurrentTagValue] = useState('');
+
+  const handleChange = (e: object, value: string[], reason: string) => {
+    if (reason === 'clear') {
+      setTags([]);
     }
+    setTags(value);
   };
 
-  const handleChange = (event: object, value: string[], reason: string) => {
-    if (reason === 'clear') {
-      setTagList([]);
-    }
-  };
+  useEffect(() => {
+    const event = new Event('change', {
+      bubbles: true,
+    });
+    const node = document.getElementById('tags-standard');
+    node && node.dispatchEvent(event);
+  }, []);
+
   return (
     <div css={tagStyle}>
       <Autocomplete
@@ -59,22 +49,17 @@ export default function Tags({ setTag, tag, tagList, setTagList }: Props) {
         onChange={handleChange}
         multiple
         id="tags-standard"
-        options={tagList.map((option) => option.label)}
-        defaultValue={undefined}
+        options={tags}
         freeSolo
+        value={tags}
         renderTags={(value, getTagProps) => {
-          const newValues = value.map((val: string, index: number) => {
-            return {
-              label: val,
-              color: colors[index] as ChipColor,
-            };
-          });
-          const chips = newValues.map((tag: ChipType, index: number) => (
+          const chips = value.map((label: string, index: number) => (
             <Chip
-              color={tag.color}
-              variant="filled"
-              label={tag.label}
               {...getTagProps({ index })}
+              key={label}
+              color={chipColors[index] as ChipColor}
+              variant="filled"
+              label={label}
             />
           ));
           return (
@@ -87,16 +72,17 @@ export default function Tags({ setTag, tag, tagList, setTagList }: Props) {
             </div>
           );
         }}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            onChange={() => setTag}
-            value={tag}
-            onKeyDown={addTag}
-            variant="standard"
-            label="Add tags"
-          />
-        )}
+        renderInput={(params) => {
+          return (
+            <TextField
+              {...params}
+              onChange={() => setCurrentTagValue}
+              value={currentTagValue}
+              variant="standard"
+              label="Add tags"
+            />
+          );
+        }}
       />
     </div>
   );
