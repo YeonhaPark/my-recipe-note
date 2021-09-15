@@ -19,7 +19,6 @@ export default function Signup() {
       const username = idEl.current && idEl.current.value;
       const password = passwordEl.current && passwordEl.current.value;
       const repassword = repasswordEl.current && repasswordEl.current.value;
-      console.log({ password, repassword });
       if (password !== repassword) {
         return alert("Passwords don't match");
       }

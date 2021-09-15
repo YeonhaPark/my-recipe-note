@@ -17,7 +17,7 @@ export const isAuth = async (req, res, next) => {
     }
     const user = await userRepository.findById(decoded.id);
     if (!user) return res.status(401).json(AUTH_ERROR);
-    req.userId = user.id; // req.customData 등록가능
+    req.userId = user.id;
     req.token = token;
     next();
   });

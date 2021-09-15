@@ -16,7 +16,6 @@ export default function Login() {
       e.preventDefault();
       const username = idEl.current && idEl.current.value;
       const password = passwordEl.current && passwordEl.current.value;
-      console.log({ username, password });
       if (!(username && password))
         throw new Error('fill out username or password');
       const { token } = await apiProvider.postAuth('login', {
@@ -25,11 +24,13 @@ export default function Login() {
       });
       if (token) {
         localStorage.setItem('token', token);
+        alert('Welcome!');
+        history.push('/main');
+      } else {
+        throw new Error('Please retry logging in');
       }
-      alert('Welcome!');
-      history.push('/main');
     } catch (err) {
-      // console.error(err);
+      alert(err as string);
     }
   };
   return (

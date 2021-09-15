@@ -5,20 +5,6 @@ export function handleResponse(response: {
   status?: number;
   data?: any;
 }) {
-  if (response.data.status === 401) {
-    console.log('여기까지옴');
-    throw new Error(response.data.message);
-  }
-  if (response.data.status === 409) {
-    throw new Error(response.data.message);
-  }
-  if (response.data.status > 299 || response.data.status < 200) {
-    if (response.data.message) {
-      throw new Error(response.data.message);
-    } else {
-      throw new Error('Something went wrong');
-    }
-  }
   if (response.results) {
     return response.results;
   }
@@ -28,13 +14,27 @@ export function handleResponse(response: {
   return response;
 }
 
-export function handleError(error: { status: any; data: any }) {
+export function handleError(error: any) {
+  console.log('====handleError', error);
+  if (error.status === 400) {
+    throw new Error(error.data.message);
+  }
   if (error.status === 401) {
     localStorage.clear();
-    return error;
+    throw new Error(error.data.message);
   }
-  if (error.data) {
-    return error.data;
+  if (error.status === 409) {
+    throw new Error(error.data.message);
+  }
+  if (error.status > 299 || error.status.status < 200) {
+    if (error.data.message) {
+      throw new Error(error.data.message);
+    } else {
+      throw new Error('Something went wrong');
+    }
+  }
+  if (error.data.message) {
+    return error.data.message;
   }
   return error;
 }

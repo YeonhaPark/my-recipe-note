@@ -9,7 +9,6 @@ function required(key, defaultValue = undefined) {
   }
   return value;
 }
-
 export const config = {
   auth: {
     jwtSecret: required('JWT_SECRET'),
@@ -18,6 +17,7 @@ export const config = {
   },
   port: parseInt(required('PORT', 8081)),
   db: {
+    port: required('DB_PORT'),
     host: required('DB_HOST'),
     user: required('DB_USER'),
     database: required('DB_DATABASE'),

@@ -11,12 +11,16 @@ const BASE_URL = process.env.REACT_APP_SERVER_DEV;
 
 const getAuth = async () => {
   try {
-    const data = await axios.get(`${BASE_URL}/auth/me`, {
+    const { data, status } = await axios.get(`${BASE_URL}/auth/me`, {
       headers: getAuthHeaders(),
     });
+    console.log('data::======', data);
+    if (status === 401) {
+      throw new Error(data.message);
+    }
     return handleResponse(data);
   } catch (err) {
-    return handleError(err.response);
+    alert(err);
   }
 };
 
@@ -29,9 +33,8 @@ const getAll = async (
       headers: getAuthHeaders(),
       params,
     });
-    console.log('dat?', data);
     return handleResponse(data);
-  } catch (err) {
+  } catch (err: any) {
     return handleError(err.response);
   }
 };
@@ -42,7 +45,7 @@ const getTags = async (resource: string, params?: any) => {
       params,
     });
     return handleResponse(data);
-  } catch (err) {
+  } catch (err: any) {
     return handleError(err.response);
   }
 };
@@ -56,7 +59,7 @@ const getSingle = async (
       headers: getAuthHeaders(),
     });
     return handleResponse(response);
-  } catch (err) {
+  } catch (err: any) {
     return handleError(err.response);
   }
 };
@@ -67,7 +70,7 @@ const post = async (resource: string, data: PostRecipeType) => {
       headers: getAuthHeaders(),
     });
     return handleResponse(response);
-  } catch (err) {
+  } catch (err: any) {
     return handleError(err.response);
   }
 };
@@ -78,7 +81,7 @@ const postAuth = async (resource: string, model: any) => {
       headers: { 'Content-Type': 'application/json' },
     });
     return handleResponse(response);
-  } catch (err) {
+  } catch (err: any) {
     return handleError(err.response);
   }
 };
@@ -89,7 +92,7 @@ const put = async (resource: string, recipe: any) => {
       headers: getAuthHeaders(),
     });
     return handleResponse(data);
-  } catch (err) {
+  } catch (err: any) {
     return handleError(err.response);
   }
 };
@@ -100,7 +103,7 @@ const remove = async (resource: string, id: string) => {
       headers: getAuthHeaders(),
     });
     return handleResponse(data);
-  } catch (err) {
+  } catch (err: any) {
     return handleError(err.response);
   }
 };

@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from '@emotion/react';
-import { useState, Dispatch, SetStateAction } from 'react';
+import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { useFormContext, useFieldArray } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -125,6 +125,18 @@ export default function Note({
     onUpload(dataToSend);
   };
 
+  useEffect(() => {
+    function detectEnter(e: any) {
+      if (e.key === 'Enter') {
+        return;
+      }
+    }
+    window.addEventListener('keydown', detectEnter);
+    return () => {
+      window.removeEventListener('keydown', detectEnter);
+    };
+  }, []);
+
   return (
     <main css={mainStyle}>
       <form css={formStyle} onSubmit={handleSubmit(onSubmit)}>
@@ -157,7 +169,6 @@ export default function Note({
               open={Boolean(anchorEl)}
               onClose={handleMenuClose}
             >
-              <MenuItem onClick={handleMenuClose}>Favorite</MenuItem>
               <MenuItem data-test="delete-btn" onClick={handleDelete}>
                 Delete
               </MenuItem>
@@ -215,6 +226,7 @@ export default function Note({
               id="content"
               multiline
               fullWidth
+              required
             />
           </div>
           <Tags tags={tags} setTags={setTags} />

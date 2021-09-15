@@ -57,7 +57,8 @@ export default function Main(): JSX.Element {
       const tags = await apiProvider.getTags('tags', query);
       setUserTags(tags);
     } catch (err) {
-      if (err.status === 401) history.push('/login');
+      alert(err);
+      history.push('/login');
     }
   }, [searchWords]);
 
@@ -72,7 +73,8 @@ export default function Main(): JSX.Element {
       const result = await apiProvider.getAll('recipes', refinedConditions);
       setRecipeList(result);
     } catch (err) {
-      if (err.status === 401) history.push('/login');
+      alert(err);
+      history.push('/login');
     }
   }, [searchTag, searchWords]);
 

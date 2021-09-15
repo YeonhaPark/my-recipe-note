@@ -2,6 +2,8 @@
 'https://www.{default}/':
   type: upstream
   upstream: 'my-recipe-note:http'
+  cache:
+    enabled: false
 
 'https://{default}/':
   type: redirect

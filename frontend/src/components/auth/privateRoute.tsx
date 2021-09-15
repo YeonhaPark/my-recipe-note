@@ -4,6 +4,7 @@ import { Route, Redirect } from 'react-router-dom';
 const isLoggedIn = () => !!localStorage.getItem('token');
 
 interface Props {
+  exact?: boolean;
   component: React.FunctionComponent<any>;
   path: string;
 }
